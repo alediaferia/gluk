@@ -16,32 +16,20 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef KPORTAGESORTFILTERMODEL_H
+#define KPORTAGESORTFILTERMODEL_H
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
+#include <QSortFilterProxyModel>
+#include "gluk_macros.h"
 
-class GlukTreeModel;
-class QProgressBar;
-
-class MainWindow : public KXmlGuiWindow
+class GLUK_EXPORT GlukSortFilterModel : public QSortFilterProxyModel
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    GlukSortFilterModel(QObject *parent = 0);
+    ~GlukSortFilterModel();
 
-    void setupActions();
-
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-
-private:
-    Ui::MainWidget ui;
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
+    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
 };
 
 #endif

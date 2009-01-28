@@ -16,19 +16,3 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef KPORTAGESORTFILTERMODEL_H
-#define KPORTAGESORTFILTERMODEL_H
-
-#include <QSortFilterProxyModel>
-
-class GlukSortFilterModel : public QSortFilterProxyModel
-{
-    Q_OBJECT
-public:
-    GlukSortFilterModel(QObject *parent = 0);
-    ~GlukSortFilterModel();
-
-    bool filterAcceptsRow(int source_row, const QModelIndex &source_parent) const;
-};
-
-#endif

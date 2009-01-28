@@ -21,8 +21,10 @@
 #define KPORTAGETREEMODEL_H
 
 #include <QAbstractItemModel>
+#include "glukjobs.h"
+#include "gluk_macros.h"
 
-class GlukTreeModel : public QAbstractItemModel
+class GLUK_EXPORT GlukTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
@@ -40,9 +42,44 @@ public:
 public slots:
     void reloadTree();
 
+protected slots:
+    void resetModel();
+
+signals:
+    void fetchProgress(qreal);
+    void fetchCompleted();
+
 private:
     class Private;
     Private *d;
+
+    friend class GlukJobs::TreeFetchJob;
+
+    void loadEntries();
+    QStringList getUseFlags(const QString &file);
+};
+
+class SignalHelper : public QObject
+{
+    Q_OBJECT
+
+private:
+    friend class GlukTreeModel;
+
+    SignalHelper(QObject *parent = 0) : QObject(parent)
+    {}
+    ~SignalHelper()
+    {}
+
+    void emitFetchProgress(qreal progress)
+    { emit fetchProgress(progress); }
+
+    void emitFetchCompleted()
+    { emit fetchCompleted(); }
+
+signals:
+    void fetchProgress(qreal);
+    void fetchCompleted();
 };
 
 #endif

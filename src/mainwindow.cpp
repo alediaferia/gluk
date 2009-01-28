@@ -17,16 +17,29 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 #include "mainwindow.h"
-#include "gluktreemodel.h"
-#include "gluksortfiltermodel.h"
+#include <gluktreemodel.h>
+#include <gluksortfiltermodel.h>
+
+#include <QProgressBar>
+#include <QFontMetrics>
 
 #include <KVBox>
+#include <KStatusBar>
 #include <KActionCollection>
 #include <KAction>
 #include <KLocale>
+#include <KDebug>
 
 MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
 {
+    m_progressBar = new QProgressBar(this);
+    m_progressBar->setMinimum(0);
+    m_progressBar->setMaximum(100);
+    m_progressBar->setMaximumWidth(150);
+    m_progressBar->setMaximumHeight(fontMetrics().height());
+    statusBar()->addPermanentWidget(m_progressBar, 0);
+    m_progressBar->hide();
+
     KVBox *mainWidget = new KVBox(this);
 
     QWidget *widget = new QWidget(mainWidget);
@@ -40,6 +53,9 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     ui.treeView->setModel(sortModel);
     ui.treeView->setAlternatingRowColors(true);
     ui.treeView->setSortingEnabled(true);
+
+    connect (m_model, SIGNAL(fetchProgress(qreal)), this, SLOT(notifyFetchProgress(qreal)));
+    connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
 
     connect (ui.searchbox, SIGNAL(textChanged(const QString &)), sortModel, SLOT(setFilterRegExp(const QString &)));
 
@@ -60,5 +76,17 @@ void MainWindow::setupActions()
     actionCollection()->addAction("refresh", refresh);
 
     connect(refresh, SIGNAL(triggered(bool)), m_model, SLOT(reloadTree()));
+}
+
+void MainWindow::notifyFetchProgress(qreal progress)
+{
+//     kDebug() << progress;
+    m_progressBar->show();
+    m_progressBar->setValue(progress*100);
+}
+
+void MainWindow::slotFetchCompleted()
+{
+    m_progressBar->hide();
 }
 

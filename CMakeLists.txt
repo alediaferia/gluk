@@ -6,4 +6,4 @@ find_package(KDE4 REQUIRED)
 include_directories(${KDE4_INCLUDES} libgluk/)
 
 add_subdirectory(src)
-# add_subdirectory(libgluk)
+add_subdirectory(libgluk)

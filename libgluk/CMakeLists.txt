@@ -1,17 +1,23 @@
-project (libkportage) 
+project (libgluk) 
 
-set (kportagecore_SRCS
-
+set (glukcore_SRCS
+    gluksortfiltermodel.cpp
+    gluktreemodel.cpp
+    treeitem.cpp
+    glukjobs.cpp
 )
 
-kde4_add_library(kportagecore SHARED ${kportagecore_SRCS})
+kde4_add_library(glukcore SHARED ${glukcore_SRCS})
 
-target_link_libraries(kportagecore ${KDE4_KDEUI_LIBS})
+target_link_libraries(glukcore ${KDE4_KDEUI_LIBS} ${KDE4_THREADWEAVER_LIBRARIES})
 
-install(TARGETS kportagecore ${INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS glukcore ${INSTALL_TARGETS_DEFAULT_ARGS})
 
-set (kportagecore_HDRS
+set (glukcore_HDRS
+    gluksortfiltermodel.h
+    gluktreemodel.h
+    treeitem.h
 )
 
-install(FILES ${_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/kportage)
+install(FILES ${glukcore_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/gluk)
 

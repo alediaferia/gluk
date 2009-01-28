@@ -20,6 +20,8 @@
 #include "treeitem.h"
 
 #include <QDirIterator>
+#include <QFileInfo>
+
 #include <KDebug>
 #include <KLocale>
 #include <KIcon>
@@ -27,18 +29,26 @@
 class GlukTreeModel::Private
 {
 public:
-    Private(GlukTreeModel *q) : q(q), rootItem(0)
+    Private(GlukTreeModel *q) : q(q), rootItem(0), fetchJob(0), helper(0)
     {}
     ~Private()
     { delete rootItem; }
 
     GlukTreeModel *q;
     TreeItem *rootItem;
-    void loadEntries();
+    GlukJobs::TreeFetchJob *fetchJob;
+    SignalHelper *helper;
 };
 
 GlukTreeModel::GlukTreeModel(QObject *parent) : QAbstractItemModel(parent), d(new Private(this))
 {
+    d->helper = new SignalHelper(this);
+    connect(d->helper, SIGNAL(fetchProgress(qreal)), this, SIGNAL(fetchProgress(qreal)));
+    connect(d->helper, SIGNAL(fetchCompleted()), this, SIGNAL(fetchCompleted()));
+
+    d->fetchJob = new GlukJobs::TreeFetchJob(this, this);
+    connect (d->fetchJob, SIGNAL(completed()), this, SLOT(resetModel()));
+
 }
 
 GlukTreeModel::~GlukTreeModel()
@@ -138,16 +148,24 @@ QModelIndex GlukTreeModel::parent(const QModelIndex &index) const
 
 void GlukTreeModel::reloadTree()
 {
-    d->loadEntries();
+    d->fetchJob->start();
+//     reset();
+}
+
+void GlukTreeModel::resetModel()
+{
     reset();
 }
 
-void GlukTreeModel::Private::loadEntries()
+void GlukTreeModel::loadEntries()
 {
-    rootItem = new TreeItem("portage");
+    kDebug() << "loading entries";
+    d->rootItem = new TreeItem("portage");
 
     // TODO: add code to check whether /usr/portage is the right location
     const QString portageDir = "/usr/portage";
+
+    const int entriesCount = QDir(portageDir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot).count();
 
     QDirIterator mainIt(portageDir, QDir::AllDirs | QDir::NoDotAndDotDot);
 
@@ -159,25 +177,30 @@ void GlukTreeModel::Private::loadEntries()
             continue;
         }
 
-//         q->beginInsertRows(QModelIndex(), i, i);
-        TreeItem *category = new TreeItem(mainIt.fileName(), TreeItem::Category, rootItem);
-        rootItem->appendChild(category);
-//         q->endInsertRows();
+        TreeItem *category = new TreeItem(mainIt.fileName(), TreeItem::Category, d->rootItem);
+        d->rootItem->appendChild(category);
 
         QDirIterator subIt(mainIt.filePath(), QDir::AllDirs | QDir::NoDotAndDotDot);
 
-        int j = 0;
+//         int j = 0;
         while (subIt.hasNext()) {
             subIt.next();
 
-//             q->beginInsertRows(q->index(i, 0, QModelIndex()), j, j);
-            TreeItem *package = new TreeItem(subIt.fileName(), TreeItem::Package, category);
-            category->appendChild(package);
-//             q->endInsertRows();
-            // TODO: set versions...
-            j++;
+            TreeItem *packageCat = new TreeItem(subIt.fileName(), TreeItem::Category, category);
+            category->appendChild(packageCat);
+
+            QDirIterator packageIt(subIt.filePath(), QStringList() << "*.ebuild", QDir::Files | QDir::NoDotAndDotDot);
+            while (packageIt.hasNext()) {
+                packageIt.next();
+                TreeItem *package = new TreeItem(packageIt.fileInfo().completeBaseName(), TreeItem::Package, packageCat);
+                packageCat->appendChild(package);
+                packageCat->setUseFlags(getUseFlags(packageIt.filePath()));
+            }
+//             j++;
         }
-        
+        d->helper->emitFetchProgress((qreal) i / entriesCount);
         i++;
     }
+
+    d->helper->emitFetchCompleted();
 }

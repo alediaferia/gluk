@@ -28,7 +28,7 @@ public:
     {}
     ~Private() {}
 
-    QStringList versions;
+    QStringList useFlags;
     TreeItem::Type type;
     TreeItem *parent;
     QList<TreeItem*> children;
@@ -105,14 +105,14 @@ TreeItem *TreeItem::package(const QString &name)
     return 0;
 }
 
-void TreeItem::setAvailableVersions(const QStringList &versions)
+void TreeItem::setUseFlags(const QStringList &flags)
 {
-    d->versions = versions;
+    d->useFlags = flags;
 }
 
-QStringList TreeItem::availableVersions() const
+QStringList TreeItem::useFlags() const
 {
-    return d->versions;
+    return d->useFlags;
 }
 
 int TreeItem::row() const

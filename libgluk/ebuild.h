@@ -16,32 +16,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef EBUILD_H
+#define EBUILD_H
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
+#include <QFile>
 
-class GlukTreeModel;
-class QProgressBar;
-
-class MainWindow : public KXmlGuiWindow
+class Ebuild : public QFile
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    Ebuild(const QString &name);
+    ~Ebuild();
 
-    void setupActions();
+    QStringList useFlags() const;
+    QString description() const;
+    QString license() const;
+    bool isMasked() const;
+    QUrl sourceUrl() const;
+    QUrl homePage() const;
+    QStringList keywords() const;
 
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-
-private:
-    Ui::MainWidget ui;
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
+protected:
+    QString value(const QString &key);
 };
 
 #endif

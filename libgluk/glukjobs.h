@@ -16,32 +16,60 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef GLUKJOBS_H
+#define GLUKJOBS_H
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
+#include <KJob>
+
+#include <ThreadWeaver/Job>
+#include <ThreadWeaver/Weaver>
 
 class GlukTreeModel;
-class QProgressBar;
 
-class MainWindow : public KXmlGuiWindow
+namespace GlukJobs
+{
+
+class Job : public KJob
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    Job(QObject *parent = 0) : KJob(parent)
+    {}
+    virtual ~Job() {}
 
-    void setupActions();
+    void start();
+    virtual void doWork() = 0;
 
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
+signals:
+    void completed();
+};
+
+class TreeFetchJob : public Job
+{
+    Q_OBJECT
+public:
+    TreeFetchJob(GlukTreeModel *model, QObject *parent = 0);
+    ~TreeFetchJob();
+
+    void doWork();
 
 private:
-    Ui::MainWidget ui;
     GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
+};
+
+class Thread : public ThreadWeaver::Job
+{
+    Q_OBJECT
+public:
+    Thread(GlukJobs::Job *);
+    virtual ~Thread();
+
+private:
+    void run();
+
+    GlukJobs::Job *m_job;
+};
+
 };
 
 #endif

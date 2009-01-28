@@ -20,8 +20,9 @@
 #define TREEITEM_H
 
 #include <QString>
+#include "gluk_macros.h"
 
-class TreeItem
+class GLUK_EXPORT TreeItem
 {
 public:
     enum Type { Category, Package };
@@ -60,16 +61,16 @@ public:
     TreeItem *package(const QString &name);
 
     /**
-     * Sets the available versions of the Package.
+     * Sets the use flags of the Package.
      * This method has no effect when the item is of type Category.
      */
-    void setAvailableVersions(const QStringList &);
+    void setUseFlags(const QStringList &);
 
     /**
-     * @Returns the available versions of the Package or QStringList if
+     * @Returns the use flags of the Package or QStringList if
      * Category is set as type.
      */
-    QStringList availableVersions() const;
+    QStringList useFlags() const;
 
     /// internal use.
     int row() const;
