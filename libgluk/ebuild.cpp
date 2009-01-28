@@ -18,6 +18,8 @@
  ***************************************************************************/
 #include "ebuild.h"
 #include <QTextStream>
+#include <QUrl>
+#include <QFileInfo>
 
 #include <KDebug>
 
@@ -26,6 +28,37 @@ Ebuild::Ebuild(const QString &name, QObject *parent) : QFile(name, parent)
 
 Ebuild::~Ebuild()
 {}
+
+QString Ebuild::packageName()
+{
+    QString name = QFileInfo(this).completeBaseName();
+    // TODO: ask f0x
+    return name;
+}
+
+QStringList Ebuild::useFlags()
+{
+    QString flags = value("IUSE");
+    return flags.split(" ", QString::SkipEmptyParts);
+}
+
+QString Ebuild::description()
+{
+    return value("DESCRIPTION");
+}
+
+QString Ebuild::license()
+{
+    return value("LICENSE");
+}
+
+QUrl Ebuild::sourceUrl()
+{
+    QString src = value("SRC_URI");
+    src = expandVars(src);
+
+    return QUrl(src);
+}
 
 QString Ebuild::value(const QString &key)
 {
@@ -61,4 +94,8 @@ QString Ebuild::value(const QString &key)
     close();
 
     return result;
+}
+
+QString Ebuild::expandVars(const QString &source)
+{
 }

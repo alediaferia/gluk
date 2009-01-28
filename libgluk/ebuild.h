@@ -35,11 +35,12 @@ public:
     QStringList useFlags();
     QString description();
     QString license();
-    bool isMasked();
+//     bool isMasked();
     QUrl sourceUrl();
     QUrl homePage();
     QStringList keywords();
     bool isValid();
+    QString packageName();
 
     /**
      * Searches for key @param key in the ebuild and returns
@@ -48,6 +49,13 @@ public:
      * e.g. IUSE.
      */
     QString value(const QString &key);
+
+    private:
+        /**
+         * @Returns the same string with the correct var explosion.
+         * E.g. {PN} becomes the packagename.
+         */
+        QString expandVars(const QString &);
 };
 
 Q_DECLARE_METATYPE(Ebuild*)
