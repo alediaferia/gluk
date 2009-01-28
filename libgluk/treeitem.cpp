@@ -17,14 +17,17 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 #include "treeitem.h"
+#include "ebuild.h"
 
 #include <QList>
 #include <QStringList>
 
+#include <KDebug>
+
 class TreeItem::Private
 {
 public:
-    Private() : parent(0)
+    Private() : parent(0), ebuild(0)
     {}
     ~Private() {}
 
@@ -33,6 +36,7 @@ public:
     TreeItem *parent;
     QList<TreeItem*> children;
     QString name;
+    Ebuild* ebuild;
 };
 
 TreeItem::TreeItem(const QString &name, TreeItem::Type type, TreeItem *parent) : d(new Private())
@@ -49,6 +53,7 @@ TreeItem::~TreeItem()
 {
     qDeleteAll(d->children);
     d->children.clear();
+    delete d->ebuild;
     delete d;
 }
 
@@ -127,4 +132,15 @@ int TreeItem::row() const
 QString TreeItem::name() const
 {
     return d->name;
+}
+
+void TreeItem::setEbuild( Ebuild *ebuild )
+{
+    d->ebuild = ebuild;
+}
+
+Ebuild* TreeItem::ebuild()
+{
+//     kDebug() << "item ebuild" << d->ebuild;
+    return d->ebuild;
 }

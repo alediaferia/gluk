@@ -18,6 +18,7 @@
  ***************************************************************************/
 #include "gluktreemodel.h"
 #include "treeitem.h"
+#include "ebuild.h"
 
 #include <QDirIterator>
 #include <QFileInfo>
@@ -104,9 +105,10 @@ QVariant GlukTreeModel::data(const QModelIndex &index, int role) const
                  return KIcon("package-x-generic");
              }
              break;
-//         case GlukTreeModel::Versions :
-//              return static_cast<TreeItem*>(index.internalPointer())->availableVersions();
-//              break;
+        case GlukTreeModel::EbuildRole :
+//              kDebug() << static_cast<TreeItem*>(index.internalPointer())->ebuild();
+             return static_cast<TreeItem*>(index.internalPointer())->ebuild();
+             break;
          default : ;
     }
 
@@ -194,7 +196,10 @@ void GlukTreeModel::loadEntries()
                 packageIt.next();
                 TreeItem *package = new TreeItem(packageIt.fileInfo().completeBaseName(), TreeItem::Package, packageCat);
                 packageCat->appendChild(package);
-//                 packageCat->setUseFlags(getUseFlags(packageIt.filePath()));
+
+                Ebuild *ebuild = new Ebuild(packageIt.filePath());
+                kDebug() << "setting" << ebuild;
+                package->setEbuild(ebuild);
             }
 //             j++;
         }

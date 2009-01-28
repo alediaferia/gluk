@@ -19,6 +19,7 @@
 #include "mainwindow.h"
 #include <gluktreemodel.h>
 #include <gluksortfiltermodel.h>
+#include <ebuild.h>
 
 #include <QProgressBar>
 #include <QFontMetrics>
@@ -56,6 +57,7 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
 
     connect (m_model, SIGNAL(fetchProgress(qreal)), this, SLOT(notifyFetchProgress(qreal)));
     connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
+    connect (ui.treeView, SIGNAL(ebuildClicked(Ebuild*)), this, SLOT(slotEbuildInfo(Ebuild*)));
 
     connect (ui.searchbox, SIGNAL(textChanged(const QString &)), sortModel, SLOT(setFilterRegExp(const QString &)));
 
@@ -88,5 +90,10 @@ void MainWindow::notifyFetchProgress(qreal progress)
 void MainWindow::slotFetchCompleted()
 {
     m_progressBar->hide();
+}
+
+void MainWindow::slotEbuildInfo(Ebuild *ebuild)
+{
+    kDebug() << ebuild->value("DESCRIPTION");
 }
 

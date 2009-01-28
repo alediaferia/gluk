@@ -16,34 +16,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "gluktreeview.h"
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
+#include "ebuild.h"
+#include "treeitem.h"
+#include "gluksortfiltermodel.h"
+#include "gluktreemodel.h"
 
-class GlukTreeModel;
-class QProgressBar;
-class Ebuild;
+#include <KDebug>
 
-class MainWindow : public KXmlGuiWindow
+GlukTreeView::GlukTreeView(QWidget *parent) : QTreeView(parent)
 {
-    Q_OBJECT
-public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    connect (this, SIGNAL(activated(const QModelIndex &)), this, SLOT(emitEbuildClicked(const QModelIndex &)));
+}
 
-    void setupActions();
+GlukTreeView::~GlukTreeView()
+{}
 
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-    void slotEbuildInfo(Ebuild *);
+void GlukTreeView::setModel(GlukSortFilterModel *model)
+{
+    QTreeView::setModel(model);
+}
 
-private:
-    Ui::MainWidget ui;
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
-};
+void GlukTreeView::emitEbuildClicked(const QModelIndex &index)
+{
+//     TreeItem *item = static_cast<//static_cast<TreeItem*>(index.internalPointer());
+// 
+//     kDebug() << item;
+//     if (item->type() == TreeItem::Category) {
+//         return;
+//     }
 
-#endif
+    kDebug() << index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
+//     GlukSortFilterModel *sortFilterModel = static_cast<GlukSortFilterModel*>(model());
+//     GlukTreeModel *model = static_cast<GlukTreeModel*>(sortFilterModel->sourceModel());
+// 
+//     Ebuild *ebuild = model->data(index, GlukTreeModel::EbuildRole).value<Ebuild*>();
+// 
+//     kDebug() << ebuild;
+//     if (!ebuild) {
+//         return;
+//     }
+// 
+//     emit ebuildClicked(ebuild);
+}

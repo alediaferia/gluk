@@ -5,6 +5,8 @@ set (glukcore_SRCS
     gluktreemodel.cpp
     treeitem.cpp
     glukjobs.cpp
+    gluktreeview.cpp
+    ebuild.cpp
 )
 
 kde4_add_library(glukcore SHARED ${glukcore_SRCS})
@@ -17,6 +19,8 @@ set (glukcore_HDRS
     gluksortfiltermodel.h
     gluktreemodel.h
     treeitem.h
+    gluktreeview.h
+    ebuild.h
 )
 
 install(FILES ${glukcore_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/gluk)

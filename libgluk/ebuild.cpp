@@ -16,3 +16,47 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
+#include "ebuild.h"
+#include <QTextStream>
+
+#include <KDebug>
+
+Ebuild::Ebuild(const QString &name, QObject *parent) : QFile(name, parent)
+{}
+
+Ebuild::~Ebuild()
+{}
+
+QString Ebuild::value(const QString &key)
+{
+    if (!open(QIODevice::ReadOnly | QIODevice::Text)) {
+        kDebug() << "unable to open";
+        return QString();
+    }
+
+    QString result;
+    
+    QTextStream stream(this);
+
+    bool keyFound = false;
+    while (!stream.atEnd()) {
+        QString line = stream.readLine();
+        if (!line.startsWith(key)) {
+            continue;
+        } else {
+            keyFound = true;
+            line.remove(key + "=\"");
+        }
+
+        if (keyFound) {
+            if (line.contains("\"")) {
+                line.remove("\"");
+                result.append(line);
+                break;
+            }
+            result.append(line);
+        }
+    }
+
+    return result;
+}

@@ -22,6 +22,8 @@
 #include <QString>
 #include "gluk_macros.h"
 
+class Ebuild;
+
 class GLUK_EXPORT TreeItem
 {
 public:
@@ -71,6 +73,9 @@ public:
      * Category is set as type.
      */
     QStringList useFlags() const;
+
+    void setEbuild( Ebuild* );
+    Ebuild* ebuild();
 
     /// internal use.
     int row() const;

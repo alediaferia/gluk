@@ -18,26 +18,38 @@
  ***************************************************************************/
 #ifndef EBUILD_H
 #define EBUILD_H
+#include "gluk_macros.h"
+
+#include <QMetaType>
 
 #include <QFile>
+class QUrl;
 
-class Ebuild : public QFile
+class GLUK_EXPORT Ebuild : public QFile
 {
     Q_OBJECT
 public:
-    Ebuild(const QString &name);
+    Ebuild(const QString &name, QObject *parent = 0);
     ~Ebuild();
 
-    QStringList useFlags() const;
-    QString description() const;
-    QString license() const;
-    bool isMasked() const;
-    QUrl sourceUrl() const;
-    QUrl homePage() const;
-    QStringList keywords() const;
+    QStringList useFlags();
+    QString description();
+    QString license();
+    bool isMasked();
+    QUrl sourceUrl();
+    QUrl homePage();
+    QStringList keywords();
+    bool isValid();
 
-protected:
+    /**
+     * Searches for key @param key in the ebuild and returns
+     * the value as QString or an empty QString if none is found.
+     * @param key must be the exact ebuild key.
+     * e.g. IUSE.
+     */
     QString value(const QString &key);
 };
+
+Q_DECLARE_METATYPE(Ebuild*)
 
 #endif

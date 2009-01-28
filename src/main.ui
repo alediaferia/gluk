@@ -33,7 +33,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QTreeView" name="treeView" />
+          <widget class="GlukTreeView" name="treeView" />
          </item>
         </layout>
        </item>
@@ -60,6 +60,11 @@
    <class>KComboBox</class>
    <extends>QComboBox</extends>
    <header>kcombobox.h</header>
+  </customwidget>
+  <customwidget>
+   <class>GlukTreeView</class>
+   <extends>QTreeView</extends>
+   <header>gluktreeview.h</header>
   </customwidget>
  </customwidgets>
  <resources/>

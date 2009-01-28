@@ -16,34 +16,28 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef GLUKTREEVIEW_H
+#define GLUKTREEVIEW_H
+#include "gluk_macros.h"
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
-
-class GlukTreeModel;
-class QProgressBar;
+#include <QTreeView>
+class GlukSortFilterModel;
 class Ebuild;
 
-class MainWindow : public KXmlGuiWindow
+class GLUK_EXPORT GlukTreeView : public QTreeView
 {
     Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    GlukTreeView(QWidget *parent = 0);
+    ~GlukTreeView();
 
-    void setupActions();
+    void setModel(GlukSortFilterModel *model);
+
+signals:
+    void ebuildClicked(Ebuild*);
 
 protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-    void slotEbuildInfo(Ebuild *);
-
-private:
-    Ui::MainWidget ui;
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
+    void emitEbuildClicked(const QModelIndex &index);
 };
 
 #endif
