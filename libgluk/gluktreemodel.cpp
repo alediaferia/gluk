@@ -106,8 +106,7 @@ QVariant GlukTreeModel::data(const QModelIndex &index, int role) const
              }
              break;
         case GlukTreeModel::EbuildRole :
-//              kDebug() << static_cast<TreeItem*>(index.internalPointer())->ebuild();
-             return static_cast<TreeItem*>(index.internalPointer())->ebuild();
+             return QVariant::fromValue(static_cast<TreeItem*>(index.internalPointer())->ebuild());
              break;
          default : ;
     }
@@ -198,7 +197,6 @@ void GlukTreeModel::loadEntries()
                 packageCat->appendChild(package);
 
                 Ebuild *ebuild = new Ebuild(packageIt.filePath());
-                kDebug() << "setting" << ebuild;
                 package->setEbuild(ebuild);
             }
 //             j++;

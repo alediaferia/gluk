@@ -47,7 +47,7 @@ void GlukTreeView::emitEbuildClicked(const QModelIndex &index)
 //         return;
 //     }
 
-    kDebug() << index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
+//     kDebug() << index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
 //     GlukSortFilterModel *sortFilterModel = static_cast<GlukSortFilterModel*>(model());
 //     GlukTreeModel *model = static_cast<GlukTreeModel*>(sortFilterModel->sourceModel());
 // 
@@ -58,5 +58,11 @@ void GlukTreeView::emitEbuildClicked(const QModelIndex &index)
 //         return;
 //     }
 // 
-//     emit ebuildClicked(ebuild);
+    Ebuild *ebuild = index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
+
+    if (!ebuild) {
+        return;
+    }
+
+    emit ebuildClicked(ebuild);
 }

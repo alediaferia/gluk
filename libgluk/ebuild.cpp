@@ -58,5 +58,7 @@ QString Ebuild::value(const QString &key)
         }
     }
 
+    close();
+
     return result;
 }

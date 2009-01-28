@@ -94,6 +94,9 @@ void MainWindow::slotFetchCompleted()
 
 void MainWindow::slotEbuildInfo(Ebuild *ebuild)
 {
-    kDebug() << ebuild->value("DESCRIPTION");
+    kDebug() << "DESCRIPTION: " << ebuild->value("DESCRIPTION");
+    kDebug() << "IUSE: " << ebuild->value("IUSE");
+    kDebug() << "KEYWORDS: " << ebuild->value("KEYWORDS");
+    kDebug() << "LICENSE: " << ebuild->value("LICENSE");
 }
 
