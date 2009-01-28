@@ -20,6 +20,8 @@
 #include <QTextStream>
 #include <QUrl>
 #include <QFileInfo>
+#include <QRegExp>
+#include <QStringList>
 
 #include <KDebug>
 
@@ -31,8 +33,10 @@ Ebuild::~Ebuild()
 
 QString Ebuild::packageName()
 {
-    QString name = QFileInfo(this).completeBaseName();
+    QString name = QFileInfo(fileName()).completeBaseName();
     // TODO: ask f0x
+    kDebug() << name;
+    name.remove(QRegExp("\\-[0-9].*."));
     return name;
 }
 
@@ -58,6 +62,16 @@ QUrl Ebuild::sourceUrl()
     src = expandVars(src);
 
     return QUrl(src);
+}
+
+QUrl Ebuild::homePage()
+{
+    return QUrl(value("HOMEPAGE"));
+}
+
+QStringList Ebuild::keywords()
+{
+    return value("KEYWORDS").split(" ", QString::SkipEmptyParts);
 }
 
 QString Ebuild::value(const QString &key)
@@ -96,6 +110,20 @@ QString Ebuild::value(const QString &key)
     return result;
 }
 
-QString Ebuild::expandVars(const QString &source)
+QString Ebuild::expandVars(const QString &src)
 {
+    QString source = src;
+
+    QFileInfo info(fileName());
+
+    const QString name = info.fileName();
+    QString PN = packageName();
+//     const QString P = QString(name).remove(QRegExp(".ebuild$"));
+//     const QString PV = QString(name).section(QRegExp("\\-[0-9].*\\."), 0).rightRef(1).toString().leftRef(1);
+
+    source.replace("{PN}", PN);
+//     source.replace("{P}", P);
+//     source.replace("{PV}", PV);
+
+    return source;
 }

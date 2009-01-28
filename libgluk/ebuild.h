@@ -50,12 +50,12 @@ public:
      */
     QString value(const QString &key);
 
-    private:
-        /**
-         * @Returns the same string with the correct var explosion.
-         * E.g. {PN} becomes the packagename.
-         */
-        QString expandVars(const QString &);
+private:
+    /**
+      * @Returns the same string with the correct var explosion.
+      * E.g. {PN} becomes the packagename.
+      */
+    QString expandVars(const QString &);
 };
 
 Q_DECLARE_METATYPE(Ebuild*)
