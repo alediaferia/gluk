@@ -56,7 +56,7 @@ private:
     friend class GlukJobs::TreeFetchJob;
 
     void loadEntries();
-    QStringList getUseFlags(const QString &file);
+//     QStringList getUseFlags(const QString &file);
 };
 
 class SignalHelper : public QObject
