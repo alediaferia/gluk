@@ -22,11 +22,13 @@
 #include <ebuild.h>
 
 #include <QProgressBar>
+#include <QDockWidget>
 #include <QFontMetrics>
 
 #include <KVBox>
 #include <KStatusBar>
 #include <KActionCollection>
+#include <KAction>
 #include <KAction>
 #include <KLocale>
 #include <KDebug>
@@ -47,6 +49,13 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     ui.setupUi(widget);
 
     setCentralWidget(mainWidget);
+
+    QDockWidget *packageDock = new QDockWidget(this);
+    pDock.setupUi(packageDock);
+    addDockWidget(Qt::RightDockWidgetArea, packageDock);
+    packageDock->toggleViewAction()->setIcon(KIcon("dialog-information"));
+    packageDock->toggleViewAction()->setText(i18n("Package information"));
+    actionCollection()->addAction("pkgdock", packageDock->toggleViewAction());
 
     m_model = new GlukTreeModel(this);
     GlukSortFilterModel *sortModel = new GlukSortFilterModel(this);
@@ -94,10 +103,11 @@ void MainWindow::slotFetchCompleted()
 
 void MainWindow::slotEbuildInfo(Ebuild *ebuild)
 {
-    kDebug() << "package name" << ebuild->packageName();
-    kDebug() << "DESCRIPTION: " << ebuild->value("DESCRIPTION");
-    kDebug() << "IUSE: " << ebuild->value("IUSE");
-    kDebug() << "KEYWORDS: " << ebuild->value("KEYWORDS");
-    kDebug() << "LICENSE: " << ebuild->value("LICENSE");
+    pDock.nameLabel->setText(ebuild->packageName());
+    pDock.descriptionLabel->setText(ebuild->description());
+    pDock.useLabel->setText(ebuild->useFlags().join(" "));
+    pDock.keywordsLabel->setText(ebuild->keywords().join(" "));
+    pDock.licenseLabel->setText(ebuild->license());
+    pDock.homepageLabel->setText("<a href=\""+ebuild->homePage().toString()+"\">"+ebuild->homePage().toString()+"</a>");
 }
 

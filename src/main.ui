@@ -5,14 +5,14 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>583</width>
-    <height>406</height>
+    <width>558</width>
+    <height>493</height>
    </rect>
   </property>
   <property name="windowTitle" >
    <string>Form</string>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout" >
+  <layout class="QVBoxLayout" name="verticalLayout_2" >
    <item>
     <widget class="QTabWidget" name="tabWidget" >
      <property name="currentIndex" >
@@ -22,27 +22,16 @@
       <attribute name="title" >
        <string>Search</string>
       </attribute>
-      <layout class="QHBoxLayout" name="horizontalLayout" >
+      <layout class="QVBoxLayout" name="verticalLayout" >
        <item>
-        <layout class="QVBoxLayout" name="verticalLayout_2" >
-         <item>
-          <widget class="KComboBox" name="searchbox" >
-           <property name="editable" >
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="GlukTreeView" name="treeView" />
-         </item>
-        </layout>
-       </item>
-       <item>
-        <widget class="QGroupBox" name="groupBox" >
-         <property name="title" >
-          <string>Package Info</string>
+        <widget class="KComboBox" name="searchbox" >
+         <property name="editable" >
+          <bool>true</bool>
          </property>
         </widget>
+       </item>
+       <item>
+        <widget class="GlukTreeView" name="treeView" />
        </item>
       </layout>
      </widget>
@@ -54,6 +43,9 @@
     </widget>
    </item>
   </layout>
+  <zorder>tabWidget</zorder>
+  <zorder>verticalSpacer</zorder>
+  <zorder>scrollArea</zorder>
  </widget>
  <customwidgets>
   <customwidget>

@@ -21,6 +21,7 @@
 
 #include <KXmlGuiWindow>
 #include "ui_main.h"
+#include "ui_packagedock.h"
 
 class GlukTreeModel;
 class QProgressBar;
@@ -42,6 +43,7 @@ protected slots:
 
 private:
     Ui::MainWidget ui;
+    Ui::DockWidget pDock;
     GlukTreeModel *m_model;
     QProgressBar *m_progressBar;
 };

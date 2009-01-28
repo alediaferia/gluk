@@ -6,7 +6,8 @@
     <Action name="refresh" />
   </ToolBar>
   <MenuBar>
-    <Menu name="file" >
+    <Menu name="view" ><text>View</text>
+    <Action name="pkgdock" />
     </Menu>
   </MenuBar>
 </gui>
