@@ -16,8 +16,8 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef KPORTAGESORTFILTERMODEL_H
-#define KPORTAGESORTFILTERMODEL_H
+#ifndef GLUKSORTFILTERMODEL_H
+#define GLUKSORTFILTERMODEL_H
 
 #include <QSortFilterProxyModel>
 #include "gluk_macros.h"

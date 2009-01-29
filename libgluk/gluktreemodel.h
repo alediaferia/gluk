@@ -17,8 +17,8 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 
-#ifndef KPORTAGETREEMODEL_H
-#define KPORTAGETREEMODEL_H
+#ifndef GLUKTREEMODEL_H
+#define GLUKTREEMODEL_H
 
 #include <QAbstractItemModel>
 #include "glukjobs.h"
