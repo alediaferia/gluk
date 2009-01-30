@@ -16,49 +16,62 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef EBUILD_H
-#define EBUILD_H
-#include "gluk_macros.h"
+#include "portageengine.h"
 
-#include <QMetaType>
+#include <KStandardDirs>
+#include <KDebug>
 
-#include <QFile>
-class QUrl;
+#include <QProcess>
 
-class GLUK_EXPORT Ebuild : public QFile
+PortageEngine::PortageEngine(QObject *parent) : QObject(parent)
+{}
+
+PortageEngine::~PortageEngine()
+{}
+
+PortageEngine* PortageEngine::m_instance = 0;
+int PortageEngine::m_refCount = 0;
+
+PortageEngine* PortageEngine::instance()
 {
-    Q_OBJECT
-public:
-    Ebuild(const QString &name, QObject *parent = 0);
-    ~Ebuild();
+    if (!m_instance) {
+        m_instance = new PortageEngine;
+    }
+    m_refCount++;
+    return m_instance;
+}
 
-    QStringList useFlags();
-    QString description();
-    QString license();
-//     bool isMasked();
-    QUrl sourceUrl();
-    QUrl homePage();
-    QStringList keywords();
-    bool isValid();
-    QString packageName();
-    QString atomName();
+void PortageEngine::release()
+{
+    m_refCount--;
+    if (!m_refCount) {
+        destroy();
+    }
+}
 
-    /**
-     * Searches for key @param key in the ebuild and returns
-     * the value as QString or an empty QString if none is found.
-     * @param key must be the exact ebuild key.
-     * e.g. IUSE.
-     */
-    QString value(const QString &key);
+void PortageEngine::destroy()
+{
+    m_instance->deleteLater();
+//     delete m_instance;
+//     m_instance = 0;
+}
 
-private:
-    /**
-      * @Returns the same string with the correct var explosion.
-      * E.g. {PN} becomes the packagename.
-      */
-    QString expandVars(const QString &);
-};
+void PortageEngine::pretend(const QStringList &atoms)
+{
+    const QString kdesu = KStandardDirs::findExe("kdesu");
 
-Q_DECLARE_METATYPE(Ebuild*)
+    QProcess *pretend = new QProcess(this);
 
-#endif
+    connect (pretend, SIGNAL(readyReadStandardOutput()), this, SLOT(emitEmergeOutput()));
+    connect (pretend, SIGNAL(readyReadStandardOutput()), this, SLOT(emitEmergeOutput()));
+
+    pretend->waitForFinished();
+    pretend->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
+}
+
+void PortageEngine::emitEmergeOutput()
+{
+    kDebug() << "output ready";
+    QProcess *process = qobject_cast<QProcess*>(sender());
+    emit emergeOutput(process->readAllStandardOutput());
+}

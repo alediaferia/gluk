@@ -25,9 +25,12 @@
 
 #include <KDebug>
 
+#include <QStandardItem>
+
 GlukTreeView::GlukTreeView(QWidget *parent) : QTreeView(parent)
 {
     connect (this, SIGNAL(activated(const QModelIndex &)), this, SLOT(emitEbuildClicked(const QModelIndex &)));
+    connect (this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(emitItemDoubleClicked(const QModelIndex &)));
 }
 
 GlukTreeView::~GlukTreeView()
@@ -40,24 +43,6 @@ void GlukTreeView::setModel(GlukSortFilterModel *model)
 
 void GlukTreeView::emitEbuildClicked(const QModelIndex &index)
 {
-//     TreeItem *item = static_cast<//static_cast<TreeItem*>(index.internalPointer());
-// 
-//     kDebug() << item;
-//     if (item->type() == TreeItem::Category) {
-//         return;
-//     }
-
-//     kDebug() << index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
-//     GlukSortFilterModel *sortFilterModel = static_cast<GlukSortFilterModel*>(model());
-//     GlukTreeModel *model = static_cast<GlukTreeModel*>(sortFilterModel->sourceModel());
-// 
-//     Ebuild *ebuild = model->data(index, GlukTreeModel::EbuildRole).value<Ebuild*>();
-// 
-//     kDebug() << ebuild;
-//     if (!ebuild) {
-//         return;
-//     }
-// 
     Ebuild *ebuild = index.data(GlukTreeModel::EbuildRole).value<Ebuild*>();
 
     if (!ebuild) {
@@ -65,4 +50,18 @@ void GlukTreeView::emitEbuildClicked(const QModelIndex &index)
     }
 
     emit ebuildClicked(ebuild);
+}
+
+void GlukTreeView::emitItemDoubleClicked(const QModelIndex &index)
+{
+    if (!index.data(GlukTreeModel::EbuildRole).value<Ebuild*>()) {
+        return; 
+    }
+
+    QStandardItem *item = new QStandardItem;
+    item->setText(index.data().toString());
+    item->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
+    item->setData(QVariant::fromValue(index.data(GlukTreeModel::EbuildRole).value<Ebuild*>()));
+
+    emit itemDoubleClicked(item);
 }

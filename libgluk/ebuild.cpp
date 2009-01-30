@@ -22,6 +22,7 @@
 #include <QFileInfo>
 #include <QRegExp>
 #include <QStringList>
+#include <QDir>
 
 #include <KDebug>
 
@@ -72,6 +73,15 @@ QUrl Ebuild::homePage()
 QStringList Ebuild::keywords()
 {
     return value("KEYWORDS").split(" ", QString::SkipEmptyParts);
+}
+
+QString Ebuild::atomName()
+{
+    QStringList dirs = fileName().split(QDir::separator());
+    QString atom = "=" + dirs[dirs.count() - 3] + "/" + QFileInfo(fileName()).completeBaseName();
+    atom.remove(".ebuild");
+
+    return atom;
 }
 
 QString Ebuild::value(const QString &key)

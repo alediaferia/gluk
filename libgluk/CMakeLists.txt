@@ -7,6 +7,7 @@ set (glukcore_SRCS
     glukjobs.cpp
     gluktreeview.cpp
     ebuild.cpp
+    portageengine.cpp
 )
 
 kde4_add_library(glukcore SHARED ${glukcore_SRCS})
@@ -21,6 +22,7 @@ set (glukcore_HDRS
     treeitem.h
     gluktreeview.h
     ebuild.h
+    portageengine.h
 )
 
 install(FILES ${glukcore_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/gluk)

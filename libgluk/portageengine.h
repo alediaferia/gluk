@@ -16,49 +16,40 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef EBUILD_H
-#define EBUILD_H
+#ifndef PORTAGEENGINE_H
+#define PORTAGEENGINE_H
+
 #include "gluk_macros.h"
 
-#include <QMetaType>
+#include <QObject>
+#include <QStringList>
+class KProcess;
 
-#include <QFile>
-class QUrl;
-
-class GLUK_EXPORT Ebuild : public QFile
+class GLUK_EXPORT PortageEngine : public QObject
 {
     Q_OBJECT
+
 public:
-    Ebuild(const QString &name, QObject *parent = 0);
-    ~Ebuild();
+    static PortageEngine *instance();
+    ~PortageEngine();
 
-    QStringList useFlags();
-    QString description();
-    QString license();
-//     bool isMasked();
-    QUrl sourceUrl();
-    QUrl homePage();
-    QStringList keywords();
-    bool isValid();
-    QString packageName();
-    QString atomName();
-
-    /**
-     * Searches for key @param key in the ebuild and returns
-     * the value as QString or an empty QString if none is found.
-     * @param key must be the exact ebuild key.
-     * e.g. IUSE.
-     */
-    QString value(const QString &key);
+    void pretend(const QStringList &atoms);
 
 private:
-    /**
-      * @Returns the same string with the correct var explosion.
-      * E.g. {PN} becomes the packagename.
-      */
-    QString expandVars(const QString &);
-};
+    static PortageEngine *m_instance;
+    static int m_refCount;
 
-Q_DECLARE_METATYPE(Ebuild*)
+    static void release();
+    static void destroy();
+
+protected:
+    PortageEngine(QObject *parent = 0);
+
+protected slots:
+    void emitEmergeOutput();
+
+signals:
+    void emergeOutput(const QByteArray &);
+};
 
 #endif

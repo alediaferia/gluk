@@ -5,8 +5,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>558</width>
-    <height>493</height>
+    <width>795</width>
+    <height>538</height>
    </rect>
   </property>
   <property name="windowTitle" >
@@ -22,7 +22,7 @@
       <attribute name="title" >
        <string>Search</string>
       </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout" >
+      <layout class="QVBoxLayout" name="verticalLayout_4" >
        <item>
         <widget class="KComboBox" name="searchbox" >
          <property name="editable" >
@@ -31,7 +31,76 @@
         </widget>
        </item>
        <item>
-        <widget class="GlukTreeView" name="treeView" />
+        <widget class="QSplitter" name="splitter" >
+         <property name="orientation" >
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <widget class="QWidget" native="1" name="widget" >
+          <layout class="QVBoxLayout" name="verticalLayout" >
+           <item>
+            <widget class="QLabel" name="label" >
+             <property name="text" >
+              <string>Portage tree</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="GlukTreeView" name="treeView" />
+           </item>
+          </layout>
+         </widget>
+         <widget class="QWidget" native="1" name="widget_2" >
+          <layout class="QVBoxLayout" name="verticalLayout_3" >
+           <item>
+            <widget class="QLabel" name="label_2" >
+             <property name="text" >
+              <string>Packages to install</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QListView" name="listView" />
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="horizontalLayout" >
+             <item>
+              <spacer name="horizontalSpacer" >
+               <property name="orientation" >
+                <enum>Qt::Horizontal</enum>
+               </property>
+               <property name="sizeHint" stdset="0" >
+                <size>
+                 <width>40</width>
+                 <height>20</height>
+                </size>
+               </property>
+              </spacer>
+             </item>
+             <item>
+              <widget class="QToolButton" name="clearButton" >
+               <property name="text" >
+                <string>...</string>
+               </property>
+               <property name="autoRaise" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QToolButton" name="deleteButton" >
+               <property name="text" >
+                <string>...</string>
+               </property>
+               <property name="autoRaise" >
+                <bool>true</bool>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </widget>
+        </widget>
        </item>
       </layout>
      </widget>
@@ -43,9 +112,6 @@
     </widget>
    </item>
   </layout>
-  <zorder>tabWidget</zorder>
-  <zorder>verticalSpacer</zorder>
-  <zorder>scrollArea</zorder>
  </widget>
  <customwidgets>
   <customwidget>

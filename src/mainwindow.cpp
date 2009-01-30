@@ -20,10 +20,13 @@
 #include <gluktreemodel.h>
 #include <gluksortfiltermodel.h>
 #include <ebuild.h>
+#include <portageengine.h>
 
 #include <QProgressBar>
 #include <QDockWidget>
 #include <QFontMetrics>
+#include <QStandardItem>
+#include <QStandardItemModel>
 
 #include <KVBox>
 #include <KStatusBar>
@@ -57,6 +60,13 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     packageDock->toggleViewAction()->setText(i18n("Package information"));
     actionCollection()->addAction("pkgdock", packageDock->toggleViewAction());
 
+    QDockWidget *installDock = new QDockWidget(this);
+    iDock.setupUi(installDock);
+    addDockWidget(Qt::BottomDockWidgetArea, installDock);
+    installDock->toggleViewAction()->setIcon(KIcon("drive-harddisk"));
+    installDock->toggleViewAction()->setText(i18n("Current installation"));
+    actionCollection()->addAction("instdock", installDock->toggleViewAction());
+
     m_model = new GlukTreeModel(this);
     GlukSortFilterModel *sortModel = new GlukSortFilterModel(this);
     sortModel->setSourceModel(m_model);
@@ -64,9 +74,19 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     ui.treeView->setAlternatingRowColors(true);
     ui.treeView->setSortingEnabled(true);
 
+    m_installModel = new QStandardItemModel(this);
+    ui.listView->setModel(m_installModel);
+
+    ui.clearButton->setIcon(KIcon("edit-clear-list"));
+    ui.deleteButton->setIcon(KIcon("list-remove"));
+
     connect (m_model, SIGNAL(fetchProgress(qreal)), this, SLOT(notifyFetchProgress(qreal)));
     connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
+
     connect (ui.treeView, SIGNAL(ebuildClicked(Ebuild*)), this, SLOT(slotEbuildInfo(Ebuild*)));
+    connect (ui.treeView, SIGNAL(itemDoubleClicked(QStandardItem*)), this, SLOT(addInstallItem(QStandardItem *)));
+    connect (ui.clearButton, SIGNAL(clicked()), this, SLOT(clearInstallItems()));
+    connect (ui.deleteButton, SIGNAL(clicked()), this, SLOT(removeSelectedInstallItem()));
 
     connect (ui.searchbox, SIGNAL(textChanged(const QString &)), sortModel, SLOT(setFilterRegExp(const QString &)));
 
@@ -85,8 +105,20 @@ void MainWindow::setupActions()
     refresh->setText(i18n("Refresh Tree"));
     refresh->setIcon(KIcon("view-refresh"));
     actionCollection()->addAction("refresh", refresh);
-
     connect(refresh, SIGNAL(triggered(bool)), m_model, SLOT(reloadTree()));
+
+    m_config = new KAction(this);
+    m_config->setText(i18n("Check installation"));
+    m_config->setIcon(KIcon("configure"));
+    actionCollection()->addAction("configure", m_config);
+    connect(m_config, SIGNAL(triggered(bool)), this, SLOT(configureInstallation()));
+
+    m_install = new KAction(this);
+    m_install->setText(i18n("Install"));
+    m_install->setIcon(KIcon("media-playback-start"));
+    actionCollection()->addAction("install", m_install);
+    connect(m_install, SIGNAL(triggered(bool)), this, SLOT(configureInstallation()));
+    m_install->setEnabled(false);
 }
 
 void MainWindow::notifyFetchProgress(qreal progress)
@@ -109,5 +141,44 @@ void MainWindow::slotEbuildInfo(Ebuild *ebuild)
     pDock.keywordsLabel->setText(ebuild->keywords().join(" "));
     pDock.licenseLabel->setText(ebuild->license());
     pDock.homepageLabel->setText("<a href=\""+ebuild->homePage().toString()+"\">"+ebuild->homePage().toString()+"</a>");
+
+    kDebug() << ebuild->atomName();
 }
 
+
+void MainWindow::addInstallItem(QStandardItem *item)
+{
+    m_installModel->appendRow(item);
+}
+
+void MainWindow::clearInstallItems()
+{
+    m_installModel->clear();
+}
+
+void MainWindow::removeSelectedInstallItem()
+{
+    QList<QStandardItem*> rows = m_installModel->takeRow(ui.listView->currentIndex().row());
+    qDeleteAll(rows);
+    rows.clear();
+}
+
+void MainWindow::configureInstallation()
+{
+    QStringList atoms;
+    for (int i = 0; i < m_installModel->rowCount(); i++) {
+        atoms << m_installModel->item(i)->data(GlukTreeModel::EbuildRole).value<Ebuild*>()->atomName();
+    }
+
+    connect (PortageEngine::instance(), SIGNAL(emergeOutput(const QByteArray &)), this, SLOT(showOutput(const QByteArray &)));
+    PortageEngine::instance()->pretend(atoms);
+}
+
+void MainWindow::doInstallation()
+{}
+
+void MainWindow::showOutput(const QByteArray &output)
+{
+//     kDebug() << output;
+    iDock.textBrowser->insertPlainText(QString(output));
+}

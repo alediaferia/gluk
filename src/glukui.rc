@@ -4,10 +4,13 @@
   <ToolBar name="mainToolBar" >
     <text>Main Toolbar</text>
     <Action name="refresh" />
+    <Action name="configure" />
+    <Action name="install" />
   </ToolBar>
   <MenuBar>
     <Menu name="view" ><text>View</text>
     <Action name="pkgdock" />
+    <Action name="instdock" />
     </Menu>
   </MenuBar>
 </gui>

@@ -22,10 +22,15 @@
 #include <KXmlGuiWindow>
 #include "ui_main.h"
 #include "ui_packagedock.h"
+#include "ui_installdock.h"
 
 class GlukTreeModel;
 class QProgressBar;
 class Ebuild;
+class QStandardItemModel;
+class QStandardItem;
+class KAction;
+class QByteArray;
 
 class MainWindow : public KXmlGuiWindow
 {
@@ -40,12 +45,24 @@ protected slots:
     void notifyFetchProgress(qreal);
     void slotFetchCompleted();
     void slotEbuildInfo(Ebuild *);
+    void addInstallItem(QStandardItem *);
+    void clearInstallItems();
+    void removeSelectedInstallItem();
+    void configureInstallation();
+    void doInstallation();
+    void showOutput(const QByteArray &);
 
 private:
     Ui::MainWidget ui;
     Ui::DockWidget pDock;
+    Ui::InstallDock iDock;
+
     GlukTreeModel *m_model;
     QProgressBar *m_progressBar;
+    QStandardItemModel *m_installModel;
+
+    KAction *m_config;
+    KAction *m_install;
 };
 
 #endif

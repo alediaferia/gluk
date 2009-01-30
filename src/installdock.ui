@@ -1,0 +1,38 @@
+<ui version="4.0" >
+ <class>InstallDock</class>
+ <widget class="QDockWidget" name="InstallDock" >
+  <property name="geometry" >
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>582</width>
+    <height>284</height>
+   </rect>
+  </property>
+  <property name="features" >
+   <set>QDockWidget::DockWidgetFeatureMask</set>
+  </property>
+  <property name="allowedAreas" >
+   <set>Qt::BottomDockWidgetArea|Qt::TopDockWidgetArea</set>
+  </property>
+  <property name="windowTitle" >
+   <string>Installation</string>
+  </property>
+  <widget class="QWidget" name="dockWidgetContents" >
+   <layout class="QVBoxLayout" name="verticalLayout" >
+    <item>
+     <widget class="QTextBrowser" name="textBrowser" >
+      <property name="frameShape" >
+       <enum>QFrame::NoFrame</enum>
+      </property>
+      <property name="openExternalLinks" >
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
