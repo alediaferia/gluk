@@ -28,6 +28,7 @@
 #include <QFontMetrics>
 #include <QStandardItem>
 #include <QStandardItemModel>
+#include <QTimer>
 
 #include <KVBox>
 #include <KStatusBar>
@@ -76,7 +77,8 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     ui.treeView->setSortingEnabled(true);
 
     m_installModel = new QStandardItemModel(this);
-    ui.listView->setModel(m_installModel);
+    ui.resumeView->setModel(m_installModel);
+    m_installModel->setHorizontalHeaderLabels(QStringList() << i18n("Package Name") << i18n("Use Flags") << i18n("Size"));
 
     ui.clearButton->setIcon(KIcon("edit-clear-list"));
     ui.deleteButton->setIcon(KIcon("list-remove"));
@@ -94,7 +96,7 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     setupActions();
     setupGUI(QSize(600, 400));
 
-    //m_model->reloadTree();
+    QTimer::singleShot(0, m_model, SLOT(reloadTree()));
 }
 
 MainWindow::~MainWindow()
@@ -142,8 +144,6 @@ void MainWindow::slotEbuildInfo(Ebuild *ebuild)
     pDock.keywordsLabel->setText(ebuild->keywords().join(" "));
     pDock.licenseLabel->setText(ebuild->license());
     pDock.homepageLabel->setText("<a href=\""+ebuild->homePage().toString()+"\">"+ebuild->homePage().toString()+"</a>");
-
-    kDebug() << ebuild->atomName();
 }
 
 
@@ -155,11 +155,12 @@ void MainWindow::addInstallItem(QStandardItem *item)
 void MainWindow::clearInstallItems()
 {
     m_installModel->clear();
+    m_installModel->setHorizontalHeaderLabels(QStringList() << i18n("Package Name") << i18n("Use Flags") << i18n("Size"));
 }
 
 void MainWindow::removeSelectedInstallItem()
 {
-    QList<QStandardItem*> rows = m_installModel->takeRow(ui.listView->currentIndex().row());
+    QList<QStandardItem*> rows = m_installModel->takeRow(ui.resumeView->currentIndex().row());
     qDeleteAll(rows);
     rows.clear();
 }
@@ -180,14 +181,13 @@ void MainWindow::doInstallation()
 
 void MainWindow::showOutput()
 {
-//     kDebug() << output;
-//     iDock.textBrowser->insertPlainText(output);
+    clearInstallItems();
+
     foreach (Package *package, PortageEngine::instance()->packages()) {
-        iDock.textBrowser->insertPlainText(
-            package->packageName() + " " +
-            package->useFlags().join(" ") + " " +
-            package->size() +
-            "\n"
-        );
+        QList<QStandardItem*> row;
+        row << new QStandardItem(package->packageName())
+            << new QStandardItem(package->useFlags().join(" "))
+            << new QStandardItem(package->size());
+        m_installModel->appendRow(row);
     }
 }

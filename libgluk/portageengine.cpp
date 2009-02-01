@@ -118,6 +118,7 @@ void PortageEngine::slotFinished()
         }
         Package *package = new Package;
         d->packages << package;
+
         package->setPackageName(d->getPackageName(line));
         package->setUseFlags(d->getUseFlags(line));
         package->setSize(d->getSize(line));
@@ -139,6 +140,7 @@ QString PortageEngine::Private::getPackageName(const QString &line)
 
     QString name = line;
     name.remove(QRegExp("\\[ebuild.......\\]"));
+
     QStringList pieces = name.split(" ", QString::SkipEmptyParts);
 
     return pieces[0];
@@ -157,6 +159,7 @@ QStringList PortageEngine::Private::getUseFlags(const QString &line)
 
     QString match = rexp.cap();
     kDebug() << match;
+
     match.remove("USE=\"");
     match.remove("\"");
 
