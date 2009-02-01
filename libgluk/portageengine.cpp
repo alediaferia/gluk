@@ -41,8 +41,13 @@ public:
     Action currentAction;
     bool done;
     QString output;
-
     QList<Package*> packages;
+
+    QString getPackageName(const QString &line);
+    QStringList getUseFlags(const QString &line);
+    QString getSize(const QString &line);
+
+    void clearPackageList();
 };
 
 PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(this))
@@ -54,9 +59,6 @@ PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(t
 
 PortageEngine::~PortageEngine()
 {
-    qDeleteAll(d->packages);
-    d->packages.clear();
-
     delete d;
 }
 
@@ -78,6 +80,9 @@ void PortageEngine::destroy()
 
 void PortageEngine::pretend(const QStringList &atoms)
 {
+    d->clearPackageList();
+    d->currentAction = Pretend;
+
     const QString kdesu = KStandardDirs::findExe("kdesu");
 
     d->process->waitForFinished();
@@ -102,7 +107,9 @@ void PortageEngine::parseEmergeOutput()
 
 void PortageEngine::slotFinished()
 {
+    d->currentAction = NoAction;
     d->done = false;
+
     const QStringList lines = d->output.split("\n");
 
     foreach (const QString &line, lines) {
@@ -111,5 +118,74 @@ void PortageEngine::slotFinished()
         }
         Package *package = new Package;
         d->packages << package;
+        package->setPackageName(d->getPackageName(line));
+        package->setUseFlags(d->getUseFlags(line));
+        package->setSize(d->getSize(line));
     }
+
+    emit finished();
+}
+
+QList<Package*> PortageEngine::packages()
+{
+    return d->packages;
+}
+
+QString PortageEngine::Private::getPackageName(const QString &line)
+{
+    if (!line.startsWith("[ebuild")) {
+        return QString();
+    }
+
+    QString name = line;
+    name.remove(QRegExp("\\[ebuild.......\\]"));
+    QStringList pieces = name.split(" ", QString::SkipEmptyParts);
+
+    return pieces[0];
+}
+
+QStringList PortageEngine::Private::getUseFlags(const QString &line)
+{
+    if (!line.startsWith("[ebuild")) {
+        return QStringList();
+    }
+
+    QString flags = line;
+    QRegExp rexp("USE=\".*\"");
+
+    rexp.indexIn(flags);
+
+    QString match = rexp.cap();
+    kDebug() << match;
+    match.remove("USE=\"");
+    match.remove("\"");
+
+    return match.split(" ");
+}
+
+QString PortageEngine::Private::getSize(const QString &line)
+{
+    if (!line.startsWith("[ebuild")) {
+        return QString();
+    }
+
+    QString size = line;
+    QRegExp rexp("\\ [0-9].*\\ .*B$");
+
+    rexp.indexIn(size);
+
+    QString match = rexp.cap();
+    kDebug() << match;
+
+    if (match.startsWith("\" ")) {
+        match.remove("\" ");
+    }
+
+    return match;
+}
+
+void PortageEngine::Private::clearPackageList()
+{
+    qDeleteAll(packages);
+    packages.clear();
 }

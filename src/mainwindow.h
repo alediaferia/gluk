@@ -50,7 +50,7 @@ protected slots:
     void removeSelectedInstallItem();
     void configureInstallation();
     void doInstallation();
-    void showOutput(const QString &);
+    void showOutput();
 
 private:
     Ui::MainWidget ui;

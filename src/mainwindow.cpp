@@ -21,6 +21,7 @@
 #include <gluksortfiltermodel.h>
 #include <ebuild.h>
 #include <portageengine.h>
+#include <package.h>
 
 #include <QProgressBar>
 #include <QDockWidget>
@@ -170,15 +171,23 @@ void MainWindow::configureInstallation()
         atoms << m_installModel->item(i)->data(GlukTreeModel::EbuildRole).value<Ebuild*>()->atomName();
     }
 
-    connect (PortageEngine::instance(), SIGNAL(emergeOutput(const QString &)), this, SLOT(showOutput(const QString &)));
+    connect (PortageEngine::instance(), SIGNAL(finished()), this, SLOT(showOutput()));
     PortageEngine::instance()->pretend(atoms);
 }
 
 void MainWindow::doInstallation()
 {}
 
-void MainWindow::showOutput(const QString &output)
+void MainWindow::showOutput()
 {
 //     kDebug() << output;
-    iDock.textBrowser->insertPlainText(output);
+//     iDock.textBrowser->insertPlainText(output);
+    foreach (Package *package, PortageEngine::instance()->packages()) {
+        iDock.textBrowser->insertPlainText(
+            package->packageName() + " " +
+            package->useFlags().join(" ") + " " +
+            package->size() +
+            "\n"
+        );
+    }
 }

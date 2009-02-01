@@ -36,6 +36,12 @@ public:
 
     void pretend(const QStringList &atoms);
 
+    /**
+     * @Returns the current packages resulting from the last
+     * Portage interrogation or an empty list if no interrogation
+     * occurred.
+     */
+    QList<Package*> packages();
 
 private:
     enum Action { NoAction, Pretend, Install };
@@ -55,6 +61,7 @@ protected slots:
 
 signals:
     void emergeOutput(const QString &);
+    void finished();
 };
 
 #endif
