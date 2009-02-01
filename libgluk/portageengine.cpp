@@ -19,24 +19,45 @@
 #include "portageengine.h"
 #include "package.h"
 
-#include <KStandardDirs>
-#include <KDebug>
-
 #include <QProcess>
 #include <QApplication>
 
-PortageEngine::PortageEngine(QObject *parent) : QObject(parent), m_process(new QProcess(this)), m_currentAction(NoAction), m_done(false)
+#include <KStandardDirs>
+#include <KDebug>
+
+class PortageEngine::Private
+{
+public:
+    Private(PortageEngine *q) : q(q),
+                                process(new QProcess(q)),
+                                currentAction(PortageEngine::NoAction),
+                                done(false)
+    {}
+    ~Private() {}
+
+    PortageEngine *q;
+
+    QProcess *process;
+    Action currentAction;
+    bool done;
+    QString output;
+
+    QList<Package*> packages;
+};
+
+PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(this))
 {
     connect (qApp, SIGNAL(aboutToQuit()), this, SLOT(destroy()));
-    connect (m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(parseEmergeOutput()));
-    connect (m_process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotFinished()));
+    connect (d->process, SIGNAL(readyReadStandardOutput()), this, SLOT(parseEmergeOutput()));
+    connect (d->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotFinished()));
 }
 
 PortageEngine::~PortageEngine()
 {
-    kDebug() << "dector";
-    qDeleteAll(m_packages);
-    m_packages.clear();
+    qDeleteAll(d->packages);
+    d->packages.clear();
+
+    delete d;
 }
 
 PortageEngine* PortageEngine::m_instance = 0;
@@ -59,26 +80,36 @@ void PortageEngine::pretend(const QStringList &atoms)
 {
     const QString kdesu = KStandardDirs::findExe("kdesu");
 
-    m_process->waitForFinished();
-    m_process->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
+    d->process->waitForFinished();
+    d->process->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
 }
 
 void PortageEngine::parseEmergeOutput()
 {
-    QString output(m_process->readAllStandardOutput());
-    kDebug() << output;
+    QString output(d->process->readAllStandardOutput());
 
     if (output.contains("done!")) {
-        m_done = true;
+        d->done = true;
     }
-    if (!m_done) {
+
+    if (!d->done) {
         return;
     }
-    kDebug() << "DONE!" << output;
+
+    d->output.append(output);
     emit emergeOutput(output);
 }
 
 void PortageEngine::slotFinished()
 {
-    m_done = false;
+    d->done = false;
+    const QStringList lines = d->output.split("\n");
+
+    foreach (const QString &line, lines) {
+        if (!line.startsWith("[ebuild")) {
+            continue;
+        }
+        Package *package = new Package;
+        d->packages << package;
+    }
 }

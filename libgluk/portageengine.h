@@ -42,11 +42,8 @@ private:
 
     static PortageEngine *m_instance;
 
-    QProcess *m_process;
-    Action m_currentAction;
-    bool m_done;
-
-    QList<Package*> m_packages;
+    class Private;
+    Private *d;
 
 protected:
     PortageEngine(QObject *parent = 0);
