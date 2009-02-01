@@ -16,53 +16,40 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#include "package.h"
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
-#include "ui_packagedock.h"
-#include "ui_installdock.h"
+Package::Package()
+{}
 
-class GlukTreeModel;
-class QProgressBar;
-class Ebuild;
-class QStandardItemModel;
-class QStandardItem;
-class KAction;
-class QByteArray;
+Package::~Package()
+{}
 
-class MainWindow : public KXmlGuiWindow
+void Package::setPackageName(const QString &name)
 {
-    Q_OBJECT
-public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    m_name = name;
+}
 
-    void setupActions();
+void Package::setUseFlags(const QStringList &flags)
+{
+    m_useFlags = flags;
+}
 
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-    void slotEbuildInfo(Ebuild *);
-    void addInstallItem(QStandardItem *);
-    void clearInstallItems();
-    void removeSelectedInstallItem();
-    void configureInstallation();
-    void doInstallation();
-    void showOutput(const QString &);
+void Package::setSize(const QString &size)
+{
+    m_size = size;
+}
 
-private:
-    Ui::MainWidget ui;
-    Ui::DockWidget pDock;
-    Ui::InstallDock iDock;
+QString Package::packageName()
+{
+    return m_name;
+}
 
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
-    QStandardItemModel *m_installModel;
+QString Package::size()
+{
+    return m_size;
+}
 
-    KAction *m_config;
-    KAction *m_install;
-};
-
-#endif
+QStringList Package::useFlags()
+{
+    return m_useFlags;
+}

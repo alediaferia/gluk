@@ -16,53 +16,39 @@
  *   Free Software Foundation, Inc.,                                       *
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
-#ifndef MAINWINDOW_H
-#define MAINWINDOW_H
+#ifndef PACKAGE_H
+#define PACKAGE_H
 
-#include <KXmlGuiWindow>
-#include "ui_main.h"
-#include "ui_packagedock.h"
-#include "ui_installdock.h"
+#include "gluk_macros.h"
+#include <QString>
+#include <QStringList>
 
-class GlukTreeModel;
-class QProgressBar;
-class Ebuild;
-class QStandardItemModel;
-class QStandardItem;
-class KAction;
-class QByteArray;
-
-class MainWindow : public KXmlGuiWindow
+class GLUK_EXPORT Package
 {
-    Q_OBJECT
 public:
-    MainWindow(QWidget *parent = 0);
-    ~MainWindow();
+    ~Package();
 
-    void setupActions();
-
-protected slots:
-    void notifyFetchProgress(qreal);
-    void slotFetchCompleted();
-    void slotEbuildInfo(Ebuild *);
-    void addInstallItem(QStandardItem *);
-    void clearInstallItems();
-    void removeSelectedInstallItem();
-    void configureInstallation();
-    void doInstallation();
-    void showOutput(const QString &);
+    QString packageName();
+    QStringList useFlags();
+    QString size();
 
 private:
-    Ui::MainWidget ui;
-    Ui::DockWidget pDock;
-    Ui::InstallDock iDock;
+    friend class PortageEngine;
+    Package();
 
-    GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
-    QStandardItemModel *m_installModel;
+    void setPackageName(const QString &);
+    void setUseFlags(const QStringList &);
+    /**
+     * sets the size in the form of X,XXX kB
+     */
+    void setSize(const QString &);
 
-    KAction *m_config;
-    KAction *m_install;
+protected:
+    QString m_name;
+    QStringList m_useFlags;
+
+    // in the form of "X,XXX kB"
+    QString m_size;
 };
 
 #endif

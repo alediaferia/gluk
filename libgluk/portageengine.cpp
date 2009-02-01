@@ -17,61 +17,68 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 #include "portageengine.h"
+#include "package.h"
 
 #include <KStandardDirs>
 #include <KDebug>
 
 #include <QProcess>
+#include <QApplication>
 
-PortageEngine::PortageEngine(QObject *parent) : QObject(parent)
-{}
+PortageEngine::PortageEngine(QObject *parent) : QObject(parent), m_process(new QProcess(this)), m_currentAction(NoAction), m_done(false)
+{
+    connect (qApp, SIGNAL(aboutToQuit()), this, SLOT(destroy()));
+    connect (m_process, SIGNAL(readyReadStandardOutput()), this, SLOT(parseEmergeOutput()));
+    connect (m_process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotFinished()));
+}
 
 PortageEngine::~PortageEngine()
-{}
+{
+    kDebug() << "dector";
+    qDeleteAll(m_packages);
+    m_packages.clear();
+}
 
 PortageEngine* PortageEngine::m_instance = 0;
-int PortageEngine::m_refCount = 0;
 
 PortageEngine* PortageEngine::instance()
 {
     if (!m_instance) {
         m_instance = new PortageEngine;
     }
-    m_refCount++;
-    return m_instance;
-}
 
-void PortageEngine::release()
-{
-    m_refCount--;
-    if (!m_refCount) {
-        destroy();
-    }
+    return m_instance;
 }
 
 void PortageEngine::destroy()
 {
     m_instance->deleteLater();
-//     delete m_instance;
-//     m_instance = 0;
 }
 
 void PortageEngine::pretend(const QStringList &atoms)
 {
     const QString kdesu = KStandardDirs::findExe("kdesu");
 
-    QProcess *pretend = new QProcess(this);
-
-    connect (pretend, SIGNAL(readyReadStandardOutput()), this, SLOT(emitEmergeOutput()));
-    connect (pretend, SIGNAL(readyReadStandardOutput()), this, SLOT(emitEmergeOutput()));
-
-    pretend->waitForFinished();
-    pretend->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
+    m_process->waitForFinished();
+    m_process->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
 }
 
-void PortageEngine::emitEmergeOutput()
+void PortageEngine::parseEmergeOutput()
 {
-    kDebug() << "output ready";
-    QProcess *process = qobject_cast<QProcess*>(sender());
-    emit emergeOutput(process->readAllStandardOutput());
+    QString output(m_process->readAllStandardOutput());
+    kDebug() << output;
+
+    if (output.contains("done!")) {
+        m_done = true;
+    }
+    if (!m_done) {
+        return;
+    }
+    kDebug() << "DONE!" << output;
+    emit emergeOutput(output);
+}
+
+void PortageEngine::slotFinished()
+{
+    m_done = false;
 }

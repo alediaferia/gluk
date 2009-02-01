@@ -23,7 +23,8 @@
 
 #include <QObject>
 #include <QStringList>
-class KProcess;
+class QProcess;
+class Package;
 
 class GLUK_EXPORT PortageEngine : public QObject
 {
@@ -35,21 +36,28 @@ public:
 
     void pretend(const QStringList &atoms);
 
-private:
-    static PortageEngine *m_instance;
-    static int m_refCount;
 
-    static void release();
-    static void destroy();
+private:
+    enum Action { NoAction, Pretend, Install };
+
+    static PortageEngine *m_instance;
+
+    QProcess *m_process;
+    Action m_currentAction;
+    bool m_done;
+
+    QList<Package*> m_packages;
 
 protected:
     PortageEngine(QObject *parent = 0);
 
 protected slots:
-    void emitEmergeOutput();
+    void destroy();
+    void parseEmergeOutput();
+    void slotFinished();
 
 signals:
-    void emergeOutput(const QByteArray &);
+    void emergeOutput(const QString &);
 };
 
 #endif

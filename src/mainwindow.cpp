@@ -170,15 +170,15 @@ void MainWindow::configureInstallation()
         atoms << m_installModel->item(i)->data(GlukTreeModel::EbuildRole).value<Ebuild*>()->atomName();
     }
 
-    connect (PortageEngine::instance(), SIGNAL(emergeOutput(const QByteArray &)), this, SLOT(showOutput(const QByteArray &)));
+    connect (PortageEngine::instance(), SIGNAL(emergeOutput(const QString &)), this, SLOT(showOutput(const QString &)));
     PortageEngine::instance()->pretend(atoms);
 }
 
 void MainWindow::doInstallation()
 {}
 
-void MainWindow::showOutput(const QByteArray &output)
+void MainWindow::showOutput(const QString &output)
 {
 //     kDebug() << output;
-    iDock.textBrowser->insertPlainText(QString(output));
+    iDock.textBrowser->insertPlainText(output);
 }
