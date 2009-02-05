@@ -51,6 +51,7 @@ protected slots:
     void configureInstallation();
     void doInstallation();
     void showOutput();
+    void handleError(const QString&, const QString&, const QString&);
 
 private:
     Ui::MainWidget ui;

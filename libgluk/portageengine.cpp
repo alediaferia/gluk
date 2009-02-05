@@ -43,11 +43,18 @@ public:
     QString output;
     QList<Package*> packages;
 
+    QString errorTitle;
+    QString errorBody;
+    QString errorDetails;
+
     QString getPackageName(const QString &line);
     QStringList getUseFlags(const QString &line);
     QString getSize(const QString &line);
 
     void clearPackageList();
+
+    /// looks for errors
+    bool checkError();
 };
 
 PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(this))
@@ -102,7 +109,7 @@ void PortageEngine::parseEmergeOutput()
     }
 
     d->output.append(output);
-    emit emergeOutput(output);
+//    emit emergeOutput(output);
 }
 
 void PortageEngine::slotFinished()
@@ -110,12 +117,25 @@ void PortageEngine::slotFinished()
     d->currentAction = NoAction;
     d->done = false;
 
+    // error check
+    if (d->checkError()) {
+        emit error(d->errorTitle, d->errorBody, d->errorDetails);
+        d->errorBody.clear();
+        d->errorTitle.clear();
+        d->errorDetails.clear();
+
+        emit finished();
+        return;
+    }
+    
+
     const QStringList lines = d->output.split("\n");
 
     foreach (const QString &line, lines) {
         if (!line.startsWith("[ebuild")) {
             continue;
         }
+	kDebug() << line;
         Package *package = new Package;
         d->packages << package;
 
@@ -123,6 +143,10 @@ void PortageEngine::slotFinished()
         package->setUseFlags(d->getUseFlags(line));
         package->setSize(d->getSize(line));
     }
+
+    d->errorBody.clear();
+    d->errorTitle.clear();
+    d->errorDetails.clear();
 
     emit finished();
 }
@@ -191,4 +215,35 @@ void PortageEngine::Private::clearPackageList()
 {
     qDeleteAll(packages);
     packages.clear();
+}
+
+bool PortageEngine::Private::checkError()
+{
+    if (!output.contains("!!!")) {
+        return false;
+    }
+
+    const QStringList lines = output.split('\n');
+    int i = 0;
+
+    foreach (const QString &line, lines) {
+        if (line.contains("done!")) {
+            continue;
+        }
+        if (i == 0) {
+            errorTitle = line;
+            errorTitle.remove("!!!");
+            i++; 
+            continue;
+        }
+        if (i == 1 || i == 2) {
+            errorBody.append(line);
+            i++;
+            continue;
+        }
+        errorDetails.append(line);
+        i++;
+    }
+
+    return true;
 }

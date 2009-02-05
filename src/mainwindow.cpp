@@ -34,7 +34,7 @@
 #include <KStatusBar>
 #include <KActionCollection>
 #include <KAction>
-#include <KAction>
+#include <KMessageBox>
 #include <KLocale>
 #include <KDebug>
 
@@ -173,6 +173,12 @@ void MainWindow::configureInstallation()
     }
 
     connect (PortageEngine::instance(), SIGNAL(finished()), this, SLOT(showOutput()));
+
+    connect (PortageEngine::instance(), 
+             SIGNAL(error(const QString &, const QString &,
+                                                    const QString &)), this,
+             SLOT(handleError(const QString &, const QString &, const QString &)));
+
     PortageEngine::instance()->pretend(atoms);
 }
 
@@ -190,4 +196,9 @@ void MainWindow::showOutput()
             << new QStandardItem(package->size());
         m_installModel->appendRow(row);
     }
+}
+
+void MainWindow::handleError(const QString &title, const QString &body, const QString &details)
+{
+    KMessageBox::detailedError(this, "<p>"+title+"</p>"+"<p>"+body+"</p>", details, i18n("Errors occurred"));
 }

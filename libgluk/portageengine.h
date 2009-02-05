@@ -62,6 +62,13 @@ protected slots:
 signals:
     void emergeOutput(const QString &);
     void finished();
+
+    /**
+     * This signal is emitted whenever an error occurs.
+     * While @param details might be empty (eg. QString()),
+     * @param title and @param body are always valid.
+     */
+    void error(const QString &title, const QString &body, const QString &details);
 };
 
 #endif
