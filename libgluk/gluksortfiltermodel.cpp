@@ -41,6 +41,7 @@ bool GlukSortFilterModel::filterAcceptsRow(int source_row, const QModelIndex &so
             return true;
         }
 
+        // WARNING: this is two levels only capable.. (FIXME)
         for (int i = 0; i < sourceModel()->rowCount(index); i++) {
             if (sourceModel()->index(i, 0, index).data().toString().contains(filterRegExp())) {
                 return true; 

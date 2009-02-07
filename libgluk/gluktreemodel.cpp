@@ -149,6 +149,7 @@ QModelIndex GlukTreeModel::parent(const QModelIndex &index) const
 
 void GlukTreeModel::reloadTree()
 {
+    delete d->rootItem;
     d->fetchJob->start();
 //     reset();
 }
