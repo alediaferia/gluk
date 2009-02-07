@@ -29,6 +29,10 @@ GlukSortFilterModel::~GlukSortFilterModel()
 
 bool GlukSortFilterModel::filterAcceptsRow(int source_row, const QModelIndex &source_parent) const
 {
+    if (filterRegExp().pattern().length() < 2) {
+        return true;
+    }
+
     QModelIndex index = sourceModel()->index(source_row, 0, source_parent);
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());

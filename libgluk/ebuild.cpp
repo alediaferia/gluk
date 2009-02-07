@@ -35,7 +35,6 @@ Ebuild::~Ebuild()
 QString Ebuild::packageName()
 {
     QString name = QFileInfo(fileName()).completeBaseName();
-    // TODO: ask f0x
     kDebug() << name;
     name.remove(QRegExp("\\-[0-9].*."));
     return name;
