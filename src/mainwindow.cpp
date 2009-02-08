@@ -69,6 +69,13 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     installDock->toggleViewAction()->setText(i18n("Current installation"));
     actionCollection()->addAction("instdock", installDock->toggleViewAction());
 
+    QDockWidget *installationResumeDock = new QDockWidget(this);
+    irDock.setupUi(installationResumeDock);
+    addDockWidget(Qt::BottomDockWidgetArea, installationResumeDock);
+//     installDock->toggleViewAction()->setIcon(KIcon("drive-harddisk"));
+    installDock->toggleViewAction()->setText(i18n("Current installation"));
+    actionCollection()->addAction("setupresume", installDock->toggleViewAction());
+
     m_model = new GlukTreeModel(this);
     GlukSortFilterModel *sortModel = new GlukSortFilterModel(this);
     sortModel->setSourceModel(m_model);
@@ -77,19 +84,19 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     ui.treeView->setSortingEnabled(true);
 
     m_installModel = new QStandardItemModel(this);
-    ui.resumeView->setModel(m_installModel);
+    irDock.resumeView->setModel(m_installModel);
     m_installModel->setHorizontalHeaderLabels(QStringList() << i18n("Package Name") << i18n("Use Flags") << i18n("Size"));
 
-    ui.clearButton->setIcon(KIcon("edit-clear-list"));
-    ui.deleteButton->setIcon(KIcon("list-remove"));
+    irDock.clearButton->setIcon(KIcon("edit-clear-list"));
+    irDock.deleteButton->setIcon(KIcon("list-remove"));
 
     connect (m_model, SIGNAL(fetchProgress(qreal)), this, SLOT(notifyFetchProgress(qreal)));
     connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
 
     connect (ui.treeView, SIGNAL(ebuildClicked(Ebuild*)), this, SLOT(slotEbuildInfo(Ebuild*)));
     connect (ui.treeView, SIGNAL(itemDoubleClicked(QStandardItem*)), this, SLOT(addInstallItem(QStandardItem *)));
-    connect (ui.clearButton, SIGNAL(clicked()), this, SLOT(clearInstallItems()));
-    connect (ui.deleteButton, SIGNAL(clicked()), this, SLOT(removeSelectedInstallItem()));
+    connect (irDock.clearButton, SIGNAL(clicked()), this, SLOT(clearInstallItems()));
+    connect (irDock.deleteButton, SIGNAL(clicked()), this, SLOT(removeSelectedInstallItem()));
 
     connect (ui.searchbox, SIGNAL(textChanged(const QString &)), sortModel, SLOT(setFilterRegExp(const QString &)));
 
@@ -160,7 +167,7 @@ void MainWindow::clearInstallItems()
 
 void MainWindow::removeSelectedInstallItem()
 {
-    QList<QStandardItem*> rows = m_installModel->takeRow(ui.resumeView->currentIndex().row());
+    QList<QStandardItem*> rows = m_installModel->takeRow(irDock.resumeView->currentIndex().row());
     qDeleteAll(rows);
     rows.clear();
 }

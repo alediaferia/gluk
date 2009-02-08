@@ -11,6 +11,7 @@
     <Menu name="view" ><text>View</text>
     <Action name="pkgdock" />
     <Action name="instdock" />
+    <Action name="setupresume" />
     </Menu>
   </MenuBar>
 </gui>

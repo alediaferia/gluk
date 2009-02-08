@@ -23,6 +23,7 @@
 #include "ui_main.h"
 #include "ui_packagedock.h"
 #include "ui_installdock.h"
+#include "ui_instresumedock.h"
 
 class GlukTreeModel;
 class QProgressBar;
@@ -57,6 +58,7 @@ private:
     Ui::MainWidget ui;
     Ui::DockWidget pDock;
     Ui::InstallDock iDock;
+    Ui::InstallResumeDock irDock;
 
     GlukTreeModel *m_model;
     QProgressBar *m_progressBar;

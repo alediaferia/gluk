@@ -33,7 +33,10 @@ public:
     Private(GlukTreeModel *q) : q(q), rootItem(0), fetchJob(0), helper(0)
     {}
     ~Private()
-    { delete rootItem; }
+    {
+        delete rootItem;
+        delete helper;
+    }
 
     GlukTreeModel *q;
     TreeItem *rootItem;
