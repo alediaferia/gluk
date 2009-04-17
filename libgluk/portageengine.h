@@ -55,7 +55,12 @@ protected:
     PortageEngine(QObject *parent = 0);
 
 protected slots:
-    void destroy();
+    /**
+     * updates references count and eventually destroys
+     * the engine when no app uses it anymore.
+     */
+    void deRef();
+
     void parseEmergeOutput();
     void slotFinished();
 

@@ -198,9 +198,27 @@ void MainWindow::showOutput()
 
     foreach (Package *package, PortageEngine::instance()->packages()) {
         QList<QStandardItem*> row;
-        row << new QStandardItem(package->packageName())
-            << new QStandardItem(package->useFlags().join(" "))
+        QStandardItem *packageItem = new QStandardItem(package->packageName());
+        row << packageItem
             << new QStandardItem(package->size());
+
+        int i = 0;
+        foreach (const QString &use, package->useFlags()) {
+            QStandardItem *useFlag = new QStandardItem(use);
+            packageItem->setChild(i, useFlag);
+
+            useFlag->setCheckable(true);
+            useFlag->setCheckState(Qt::Checked);
+            if (useFlag->text().startsWith("-")) {
+                QString text = useFlag->text();
+                text.remove(0, '-');
+                useFlag->setText(text);
+                useFlag->setCheckState(Qt::Unchecked);
+            }
+            // TODO: set proper Qt::CheckState
+            i++;
+        }
+
         m_installModel->appendRow(row);
     }
 }

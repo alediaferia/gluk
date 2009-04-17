@@ -24,10 +24,10 @@
        <item>
         <widget class="QTreeView" name="resumeView">
          <property name="rootIsDecorated">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="itemsExpandable">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="expandsOnDoubleClick">
           <bool>false</bool>

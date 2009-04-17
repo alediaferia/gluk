@@ -31,7 +31,8 @@ public:
     Private(PortageEngine *q) : q(q),
                                 process(new QProcess(q)),
                                 currentAction(PortageEngine::NoAction),
-                                done(false)
+                                done(false),
+                                refs(0)
     {}
     ~Private() {}
 
@@ -42,6 +43,9 @@ public:
     bool done;
     QString output;
     QList<Package*> packages;
+
+    QList<QApplication*> connectedApps;
+    int refs;
 
     QString errorTitle;
     QString errorBody;
@@ -59,13 +63,13 @@ public:
 
 PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(this))
 {
-    connect (qApp, SIGNAL(aboutToQuit()), this, SLOT(destroy()));
     connect (d->process, SIGNAL(readyReadStandardOutput()), this, SLOT(parseEmergeOutput()));
     connect (d->process, SIGNAL(finished(int, QProcess::ExitStatus)), this, SLOT(slotFinished()));
 }
 
 PortageEngine::~PortageEngine()
 {
+    kDebug() << "engine dying";
     delete d;
 }
 
@@ -77,12 +81,22 @@ PortageEngine* PortageEngine::instance()
         m_instance = new PortageEngine;
     }
 
+    if (!m_instance->d->connectedApps.contains(qApp)) {
+        m_instance->d->connectedApps << qApp;
+        m_instance->d->refs++;
+        connect (qApp, SIGNAL(aboutToQuit()), m_instance, SLOT(deRef()));
+    }
+
     return m_instance;
 }
 
-void PortageEngine::destroy()
+void PortageEngine::deRef()
 {
-    m_instance->deleteLater();
+    d->refs--;
+    kDebug() << d->refs;
+    if (!d->refs) {
+        m_instance->deleteLater();
+    }
 }
 
 void PortageEngine::pretend(const QStringList &atoms)
