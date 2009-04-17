@@ -32,12 +32,16 @@ namespace GlukJobs
 class Job : public KJob
 {
     Q_OBJECT
+
+friend class Thread;
 public:
     Job(QObject *parent = 0) : KJob(parent)
     {}
     virtual ~Job() {}
 
     void start();
+
+protected:
     virtual void doWork() = 0;
 
 signals:

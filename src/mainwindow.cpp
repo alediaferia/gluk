@@ -204,14 +204,15 @@ void MainWindow::showOutput()
 
         int i = 0;
         foreach (const QString &use, package->useFlags()) {
+            kDebug() << "FLAG:" << use;
             QStandardItem *useFlag = new QStandardItem(use);
             packageItem->setChild(i, useFlag);
 
             useFlag->setCheckable(true);
             useFlag->setCheckState(Qt::Checked);
-            if (useFlag->text().startsWith("-")) {
+            if (useFlag->text().startsWith('-')) {
                 QString text = useFlag->text();
-                text.remove(0, '-');
+                text = text.mid(1);
                 useFlag->setText(text);
                 useFlag->setCheckState(Qt::Unchecked);
             }

@@ -24,21 +24,6 @@ Package::Package()
 Package::~Package()
 {}
 
-void Package::setPackageName(const QString &name)
-{
-    m_name = name;
-}
-
-void Package::setUseFlags(const QStringList &flags)
-{
-    m_useFlags = flags;
-}
-
-void Package::setSize(const QString &size)
-{
-    m_size = size;
-}
-
 QString Package::packageName()
 {
     return m_name;

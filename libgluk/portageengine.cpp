@@ -143,19 +143,19 @@ void PortageEngine::slotFinished()
     }
     
 
-    const QStringList lines = d->output.split("\n");
+    const QStringList lines = d->output.split('\n');
 
     foreach (const QString &line, lines) {
         if (!line.startsWith("[ebuild")) {
             continue;
         }
-	kDebug() << line;
+        kDebug() << line;
         Package *package = new Package;
         d->packages << package;
 
-        package->setPackageName(d->getPackageName(line));
-        package->setUseFlags(d->getUseFlags(line));
-        package->setSize(d->getSize(line));
+        package->m_name = d->getPackageName(line);
+        package->m_useFlags = d->getUseFlags(line);
+        package->m_size = d->getSize(line);
     }
 
     d->errorBody.clear();
@@ -193,7 +193,10 @@ QStringList PortageEngine::Private::getUseFlags(const QString &line)
     QString flags = line;
     QRegExp rexp("USE=\".*\"");
 
-    rexp.indexIn(flags);
+    int index = rexp.indexIn(flags);
+    if (index == -1) { // no match found
+        return QStringList();
+    }
 
     QString match = rexp.cap();
     kDebug() << match;

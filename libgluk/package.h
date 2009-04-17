@@ -28,26 +28,30 @@ class GLUK_EXPORT Package
 public:
     ~Package();
 
+    /**
+     * @Returns the package name.
+     */
     QString packageName();
+
+    /**
+     * @Returns the use flags associated with the package.
+     */
     QStringList useFlags();
+
+    /**
+     * @Returns the size of the package in the form of X,XXX kB
+     */
     QString size();
 
 private:
     friend class PortageEngine;
     Package();
 
-    void setPackageName(const QString &);
-    void setUseFlags(const QStringList &);
-    /**
-     * sets the size in the form of X,XXX kB
-     */
-    void setSize(const QString &);
 
-protected:
     QString m_name;
     QStringList m_useFlags;
 
-    // in the form of "X,XXX kB"
+    /// in the form of "X,XXX kB"
     QString m_size;
 };
 

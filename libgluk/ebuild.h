@@ -32,7 +32,12 @@ public:
     Ebuild(const QString &name, QObject *parent = 0);
     ~Ebuild();
 
+    /**
+     * This is an overloaded member function
+     * provided for convenience. @Returns the use flags list.
+     */
     QStringList useFlags();
+
     QString description();
     QString license();
 //     bool isMasked();
