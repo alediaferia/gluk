@@ -38,3 +38,8 @@ QStringList Package::useFlags()
 {
     return m_useFlags;
 }
+
+Package::Type Package::type()
+{
+    return m_type;
+}

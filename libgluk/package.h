@@ -26,6 +26,20 @@
 class GLUK_EXPORT Package
 {
 public:
+    enum Type {
+               Invalid,
+               New,
+               Slotted,
+               Updating,
+               Downgrading,
+               Reinstalling,
+               FetchRestrictionManualDownload,
+               FetchRestrictionAlreadyDownloaded,
+               Interactive,
+               BlockedUnresolved,
+               BlockedAutomaticallyResolved
+    };
+
     ~Package();
 
     /**
@@ -43,9 +57,14 @@ public:
      */
     QString size();
 
+    /**
+     * @Returns the package type (New package, Reinstalling package..)
+     */
+    Type type();
+
 private:
     friend class PortageEngine;
-    Package();
+    Package() : m_type(Invalid) {}
 
 
     QString m_name;
@@ -53,6 +72,8 @@ private:
 
     /// in the form of "X,XXX kB"
     QString m_size;
+
+    Type m_type;
 };
 
 #endif

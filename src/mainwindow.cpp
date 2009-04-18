@@ -86,7 +86,7 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
 
     m_installModel = new QStandardItemModel(this);
     irDock.resumeView->setModel(m_installModel);
-    m_installModel->setHorizontalHeaderLabels(QStringList() << i18n("Package Name") << i18n("Use Flags") << i18n("Size"));
+    m_installModel->setHorizontalHeaderLabels(QStringList() << i18n("Package Name") << i18n("Size"));
 
     irDock.clearButton->setIcon(KIcon("edit-clear-list"));
     irDock.deleteButton->setIcon(KIcon("list-remove"));

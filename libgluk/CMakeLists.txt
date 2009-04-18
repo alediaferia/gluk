@@ -28,4 +28,3 @@ set (glukcore_HDRS
 )
 
 install(FILES ${glukcore_HDRS} DESTINATION ${INCLUDE_INSTALL_DIR}/gluk)
-
