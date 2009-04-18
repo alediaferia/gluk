@@ -102,6 +102,7 @@ void PortageEngine::deRef()
 void PortageEngine::pretend(const QStringList &atoms)
 {
     d->clearPackageList();
+    d->output.clear();
     d->currentAction = Pretend;
 
     const QString kdesu = KStandardDirs::findExe("kdesu");
