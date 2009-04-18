@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE kpartgui SYSTEM "kpartgui.dtd">
-<gui name="gluk" version="1">
+<gui name="gluk"
+     version="1"
+     xmlns="http://www.kde.org/standards/kxmlgui/1.0"
+     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+     xsi:schemaLocation="http://www.kde.org/standards/kxmlgui/1.0
+                         http://www.kde.org/standards/kxmlgui/1.0/kxmlgui.xsd" >
+
   <ToolBar name="mainToolBar" >
     <text>Main Toolbar</text>
     <Action name="refresh" />
@@ -10,8 +15,7 @@
   <MenuBar>
     <Menu name="view" ><text>View</text>
     <Action name="pkgdock" />
-    <Action name="instdock" />
-    <Action name="setupresume" />
+    <Action name="resume" />
     </Menu>
   </MenuBar>
 </gui>

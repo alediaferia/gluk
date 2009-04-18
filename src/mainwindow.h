@@ -57,7 +57,6 @@ protected slots:
 private:
     Ui::MainWidget ui;
     Ui::DockWidget pDock;
-    Ui::InstallDock iDock;
     Ui::InstallResumeDock irDock;
 
     GlukTreeModel *m_model;

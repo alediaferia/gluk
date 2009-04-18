@@ -58,23 +58,24 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     QDockWidget *packageDock = new QDockWidget(this);
     pDock.setupUi(packageDock);
     addDockWidget(Qt::RightDockWidgetArea, packageDock);
-    packageDock->toggleViewAction()->setIcon(KIcon("dialog-information"));
-    packageDock->toggleViewAction()->setText(i18n("Package information"));
-    actionCollection()->addAction("pkgdock", packageDock->toggleViewAction());
-
-    QDockWidget *installDock = new QDockWidget(this);
-    iDock.setupUi(installDock);
-    addDockWidget(Qt::BottomDockWidgetArea, installDock);
-    installDock->toggleViewAction()->setIcon(KIcon("drive-harddisk"));
-    installDock->toggleViewAction()->setText(i18n("Current installation"));
-    actionCollection()->addAction("instdock", installDock->toggleViewAction());
+    KAction *pkgdockAction = new KAction(this);
+    pkgdockAction->setText(i18n("Package information"));
+    pkgdockAction->setIcon(KIcon("dialog-information"));
+    pkgdockAction->setCheckable(true);
+    pkgdockAction->setChecked(true);
+    connect (pkgdockAction, SIGNAL(triggered(bool)), packageDock, SLOT(setVisible(bool)));
+    actionCollection()->addAction("pkgdock", pkgdockAction);
 
     QDockWidget *installationResumeDock = new QDockWidget(this);
     irDock.setupUi(installationResumeDock);
     addDockWidget(Qt::BottomDockWidgetArea, installationResumeDock);
-//     installDock->toggleViewAction()->setIcon(KIcon("drive-harddisk"));
-    installDock->toggleViewAction()->setText(i18n("Current installation"));
-    actionCollection()->addAction("setupresume", installDock->toggleViewAction());
+    KAction *iresumeAction = new KAction(this);
+    iresumeAction->setText(i18n("Installation resume"));
+    iresumeAction->setIcon(KIcon("mail-mark-task"));
+    iresumeAction->setCheckable(true);
+    iresumeAction->setChecked(true);
+    connect (iresumeAction, SIGNAL(triggered(bool)), installationResumeDock, SLOT(setVisible(bool)));
+    actionCollection()->addAction("resume", iresumeAction);
 
     m_model = new GlukTreeModel(this);
     GlukSortFilterModel *sortModel = new GlukSortFilterModel(this);

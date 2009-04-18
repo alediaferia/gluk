@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>795</width>
-    <height>538</height>
+    <width>784</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,46 +15,21 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
    <item>
-    <widget class="QTabWidget" name="tabWidget">
-     <property name="currentIndex">
-      <number>0</number>
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Portage tree</string>
      </property>
-     <widget class="QWidget" name="tab">
-      <attribute name="title">
-       <string>Search</string>
-      </attribute>
-      <layout class="QVBoxLayout" name="verticalLayout_3">
-       <item>
-        <widget class="KComboBox" name="searchbox">
-         <property name="editable">
-          <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QWidget" name="widget" native="true">
-         <layout class="QVBoxLayout" name="verticalLayout">
-          <item>
-           <widget class="QLabel" name="label">
-            <property name="text">
-             <string>Portage tree</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="GlukTreeView" name="treeView"/>
-          </item>
-         </layout>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-     <widget class="QWidget" name="tab_2">
-      <attribute name="title">
-       <string>Install</string>
-      </attribute>
-     </widget>
     </widget>
+   </item>
+   <item>
+    <widget class="KComboBox" name="searchbox">
+     <property name="editable">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item>
+    <widget class="GlukTreeView" name="treeView"/>
    </item>
   </layout>
  </widget>
