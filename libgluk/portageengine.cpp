@@ -124,7 +124,6 @@ void PortageEngine::parseEmergeOutput()
     }
 
     d->output.append(output);
-//    emit emergeOutput(output);
 }
 
 void PortageEngine::slotFinished()

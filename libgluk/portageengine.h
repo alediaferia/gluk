@@ -74,7 +74,6 @@ protected slots:
     void slotFinished();
 
 signals:
-    void emergeOutput(const QString &);
     void finished();
 
     /**
