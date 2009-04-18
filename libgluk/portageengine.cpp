@@ -54,6 +54,7 @@ public:
     QString getPackageName(const QString &line);
     QStringList getUseFlags(const QString &line);
     QString getSize(const QString &line);
+    Package::Attributes getPackageAttributes(const QString &line);
 
     void clearPackageList();
 
@@ -156,6 +157,7 @@ void PortageEngine::slotFinished()
         package->m_name = d->getPackageName(line);
         package->m_useFlags = d->getUseFlags(line);
         package->m_size = d->getSize(line);
+        d->getPackageAttributes(line);
     }
 
     d->errorBody.clear();
@@ -182,7 +184,8 @@ QString PortageEngine::Private::getPackageName(const QString &line)
     }
 
     QString name = line;
-    name.remove(QRegExp("\\[ebuild.......\\]"));
+    QRegExp rexp("\\[ebuild.......\\]");
+    name.remove(rexp);
 
     QStringList pieces = name.split(" ", QString::SkipEmptyParts);
 
@@ -231,6 +234,22 @@ QString PortageEngine::Private::getSize(const QString &line)
     }
 
     return match;
+}
+
+Package::Attributes PortageEngine::Private::getPackageAttributes(const QString &line)
+{
+    if (!line.startsWith("[ebuild")) {
+        return Package::Invalid;
+    }
+
+    QRegExp rexp("\\[ebuild.......\\]");
+    rexp.indexIn(line);
+
+    QString attrString = rexp.cap();
+    attrString = attrString.mid(7);
+    attrString.remove(']');
+
+    kDebug() << attrString;
 }
 
 void PortageEngine::Private::clearPackageList()

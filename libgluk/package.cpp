@@ -18,9 +18,6 @@
  ***************************************************************************/
 #include "package.h"
 
-Package::Package()
-{}
-
 Package::~Package()
 {}
 
@@ -39,7 +36,7 @@ QStringList Package::useFlags()
     return m_useFlags;
 }
 
-Package::Type Package::type()
+Package::Attributes Package::attributes()
 {
-    return m_type;
+    return m_attributes;
 }

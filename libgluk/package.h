@@ -22,23 +22,25 @@
 #include "gluk_macros.h"
 #include <QString>
 #include <QStringList>
+#include <QFlags>
 
 class GLUK_EXPORT Package
 {
 public:
-    enum Type {
-               Invalid,
-               New,
-               Slotted,
-               Updating,
-               Downgrading,
-               Reinstalling,
-               FetchRestrictionManualDownload,
-               FetchRestrictionAlreadyDownloaded,
-               Interactive,
-               BlockedUnresolved,
-               BlockedAutomaticallyResolved
+    enum Attribute {
+               Invalid = 0x0,
+               New = 0x1,
+               Slotted = 0x2,
+               Updating = 0x4,
+               Downgrading = 0x8,
+               Reinstalling = 0x16,
+               FetchRestrictionManualDownload = 0x32,
+               FetchRestrictionAlreadyDownloaded = 0x64,
+               Interactive = 0x128,
+               BlockedUnresolved = 0x256,
+               BlockedAutomaticallyResolved = 0x512
     };
+    Q_DECLARE_FLAGS(Attributes, Attribute)
 
     ~Package();
 
@@ -58,22 +60,21 @@ public:
     QString size();
 
     /**
-     * @Returns the package type (New package, Reinstalling package..)
+     * @Returns the package attributes (New package, Reinstalling package..)
      */
-    Type type();
+    Attributes attributes();
 
 private:
     friend class PortageEngine;
-    Package() : m_type(Invalid) {}
-
+    Package() : m_attributes(Invalid) {}
 
     QString m_name;
     QStringList m_useFlags;
-
     /// in the form of "X,XXX kB"
     QString m_size;
-
-    Type m_type;
+    Attributes m_attributes;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS(Package::Attributes)
 
 #endif
