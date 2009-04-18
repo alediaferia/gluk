@@ -31,6 +31,12 @@ class GLUK_EXPORT PortageEngine : public QObject
     Q_OBJECT
 
 public:
+    enum Action {
+                 NoAction, /// the engine is performing no action
+                 Pretend,  /// the engine is asking emerge for pretending packages
+                 Install   /// the engine is using emerge to install packages
+                };
+
     static PortageEngine *instance();
     ~PortageEngine();
 
@@ -43,9 +49,12 @@ public:
      */
     QList<Package*> packages();
 
-private:
-    enum Action { NoAction, Pretend, Install };
+    /**
+     * @Returns the action currently performing.
+     */
+    Action currentAction();
 
+private:
     static PortageEngine *m_instance;
 
     class Private;

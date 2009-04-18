@@ -171,6 +171,11 @@ QList<Package*> PortageEngine::packages()
     return d->packages;
 }
 
+PortageEngine::Action PortageEngine::currentAction()
+{
+    return d->currentAction;
+}
+
 QString PortageEngine::Private::getPackageName(const QString &line)
 {
     if (!line.startsWith("[ebuild")) {
