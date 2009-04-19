@@ -26,20 +26,35 @@
 class QProcess;
 class Package;
 
+/**
+ * @class PortageEngine
+ * @brief The engine that interfaces with the emerge program.
+ * @author Alessandro Diaferia
+ */
 class GLUK_EXPORT PortageEngine : public QObject
 {
     Q_OBJECT
 
 public:
+    /**
+     * @enum Action defines the current action
+     */
     enum Action {
-                 NoAction, /// the engine is performing no action
-                 Pretend,  /// the engine is asking emerge for pretending packages
-                 Install   /// the engine is using emerge to install packages
+                 NoAction, /**< the engine is performing no action. */
+                 Pretend,  /**< the engine is asking emerge for pretending packages. */
+                 Install   /**< the engine is using emerge to install packages. */
                 };
 
+    /**
+     * The instance of the engine. Use this to retrieve a pointer to the engine.
+     */
     static PortageEngine *instance();
     ~PortageEngine();
 
+    /**
+     * Performs a pretend action using emerge.
+     * @param atoms are the package atoms to be pretended.
+     */
     void pretend(const QStringList &atoms);
 
     /**
@@ -65,7 +80,7 @@ protected:
 
 protected slots:
     /**
-     * updates references count and eventually destroys
+     * This slot is called to update references count and eventually destroy
      * the engine when no app uses it anymore.
      */
     void deRef();
@@ -74,12 +89,17 @@ protected slots:
     void slotFinished();
 
 signals:
+    /**
+     * This signal is emitted whenever the last action
+     * performing finishes.
+     */
     void finished();
 
     /**
      * This signal is emitted whenever an error occurs.
-     * While @param details might be empty (eg. QString()),
-     * @param title and @param body are always valid.
+     * @param details might be empty,
+     * @param title always valid.
+     * @param body always valid.
      */
     void error(const QString &title, const QString &body, const QString &details);
 };

@@ -209,7 +209,42 @@ Package* PortageEngine::Private::createPackageData(const QString &line)
     QString attrString = rexp.cap();
     attrString = attrString.mid(7);
     attrString.remove(']');
+    attrString.remove(' '); // no need for spaces
     kDebug() << attrString;
+
+    Package::Attributes attributes;
+    if (attrString.contains('N')) {
+        attributes |= Package::New;
+    }
+    if (attrString.contains('S')) {
+        attributes |= Package::Slotted;
+    }
+    if (attrString.contains('U')) {
+        attributes |= Package::Updating;
+    }
+    if (attrString.contains('D')) {
+        attributes |= Package::Downgrading;
+    }
+    if (attrString.contains('R')) {
+        attributes |= Package::Reinstalling;
+    }
+    if (attrString.contains('F')) {
+        attributes |= Package::FetchRestrictionManualDownload;
+    }
+    if (attrString.contains('f')) {
+        attributes |= Package::FetchRestrictionAlreadyDownloaded;
+    }
+    if (attrString.contains('I')) {
+        attributes |= Package::Interactive;
+    }
+    if (attrString.contains('B')) {
+        attributes |= Package::BlockedUnresolved;
+    }
+    if (attrString.contains('b')) {
+        attributes |= Package::BlockedAutomaticallyResolved;
+    }
+    package->m_attributes = attributes;
+    kDebug() << attributes;
 
    return package;
 }

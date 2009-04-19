@@ -24,21 +24,30 @@
 #include <QStringList>
 #include <QFlags>
 
+/**
+ * @class Package
+ * @brief This class defines an emerge package.
+ * @author Alessandro Diaferia
+ */
 class GLUK_EXPORT Package
 {
 public:
+    /**
+     * @enum Attribute The package attribute as emerge reports them in the form:
+     * [ebuild  NR...]
+     */
     enum Attribute {
-               Invalid = 0x0,
-               New = 0x1,
-               Slotted = 0x2,
-               Updating = 0x4,
-               Downgrading = 0x8,
-               Reinstalling = 0x16,
-               FetchRestrictionManualDownload = 0x32,
-               FetchRestrictionAlreadyDownloaded = 0x64,
-               Interactive = 0x128,
-               BlockedUnresolved = 0x256,
-               BlockedAutomaticallyResolved = 0x512
+               Invalid = 0x0, /**< @internal used for initialization purposes. */
+               New = 0x1, /**< The package is new and not already installed. */
+               Slotted = 0x2, /**< The package is slotted. */
+               Updating = 0x4, /**< The package will be updated. */
+               Downgrading = 0x8, /**< The package is will be downgraded. */
+               Reinstalling = 0x16, /**< The package will be reinstalled. */
+               FetchRestrictionManualDownload = 0x32, /**< The fetch of the package is restricted, the user has to manually download it. */
+               FetchRestrictionAlreadyDownloaded = 0x64, /**< The fetch is restricted but the package already downloaded. */
+               Interactive = 0x128, /**< The package requires user input. */
+               BlockedUnresolved = 0x256, /**< The package is blocked by another package. */
+               BlockedAutomaticallyResolved = 0x512 /**< The package is blocked by another package but the conflict has been resolved. */
     };
     Q_DECLARE_FLAGS(Attributes, Attribute)
 
@@ -55,12 +64,12 @@ public:
     QStringList useFlags();
 
     /**
-     * @Returns the size of the package in the form of X,XXX kB
+     * @Returns the size of the package in the form of X,XXX kB.
      */
     QString size();
 
     /**
-     * @Returns the package attributes (New package, Reinstalling package..)
+     * @Returns the package attributes (New package, Reinstalling package..).
      */
     Attributes attributes();
 
