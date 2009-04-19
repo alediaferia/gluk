@@ -51,10 +51,7 @@ public:
     QString errorBody;
     QString errorDetails;
 
-    QString getPackageName(const QString &line);
-    QStringList getUseFlags(const QString &line);
-    QString getSize(const QString &line);
-    Package::Attributes getPackageAttributes(const QString &line);
+    Package* createPackageData(const QString &line);
 
     void clearPackageList();
 
@@ -71,6 +68,7 @@ PortageEngine::PortageEngine(QObject *parent) : QObject(parent), d(new Private(t
 PortageEngine::~PortageEngine()
 {
     kDebug() << "engine dying";
+    d->clearPackageList();
     delete d;
 }
 
@@ -151,13 +149,8 @@ void PortageEngine::slotFinished()
             continue;
         }
         kDebug() << line;
-        Package *package = new Package;
+        Package *package = d->createPackageData(line);
         d->packages << package;
-
-        package->m_name = d->getPackageName(line);
-        package->m_useFlags = d->getUseFlags(line);
-        package->m_size = d->getSize(line);
-        d->getPackageAttributes(line);
     }
 
     d->errorBody.clear();
@@ -177,79 +170,48 @@ PortageEngine::Action PortageEngine::currentAction()
     return d->currentAction;
 }
 
-QString PortageEngine::Private::getPackageName(const QString &line)
+Package* PortageEngine::Private::createPackageData(const QString &line)
 {
     if (!line.startsWith("[ebuild")) {
-        return QString();
+        return 0;
     }
 
+    Package *package = new Package;
+    // the parsing..
+    QRegExp rexp("\\[ebuild.......\\]");
+
+    // the name of the package
     QString name = line;
-    QRegExp rexp("\\[ebuild.......\\]");
     name.remove(rexp);
+    name = name.split(" ", QString::SkipEmptyParts)[0];
+    package->m_name = name;
 
-    QStringList pieces = name.split(" ", QString::SkipEmptyParts);
-
-    return pieces[0];
-}
-
-QStringList PortageEngine::Private::getUseFlags(const QString &line)
-{
-    if (!line.startsWith("[ebuild")) {
-        return QStringList();
-    }
-
-    QString flags = line;
-    QRegExp rexp("USE=\".*\"");
-
-    int index = rexp.indexIn(flags);
-    if (index == -1) { // no match found
-        return QStringList();
-    }
-
-    QString match = rexp.cap();
-    kDebug() << match;
-
-    match.remove("USE=\"");
-    match.remove("\"");
-
-    return match.split(" ");
-}
-
-QString PortageEngine::Private::getSize(const QString &line)
-{
-    if (!line.startsWith("[ebuild")) {
-        return QString();
-    }
-
-    QString size = line;
-    QRegExp rexp("\\ [0-9].*\\ .*B$");
-
-    rexp.indexIn(size);
-
-    QString match = rexp.cap();
-    kDebug() << match;
-
-    if (match.startsWith("\" ")) {
-        match.remove("\" ");
-    }
-
-    return match;
-}
-
-Package::Attributes PortageEngine::Private::getPackageAttributes(const QString &line)
-{
-    if (!line.startsWith("[ebuild")) {
-        return Package::Invalid;
-    }
-
-    QRegExp rexp("\\[ebuild.......\\]");
+    // the use flags of the package
+    rexp = QRegExp("USE=\".*\"");
     rexp.indexIn(line);
+    QString useFlags = rexp.cap();
+    useFlags.remove("USE=\"");
+    useFlags.remove('\"');
+    package->m_useFlags = useFlags.split(" ");
 
+    // the size of the package
+    rexp = QRegExp("\\ [0-9].*\\ .*B$");
+    rexp.indexIn(line);
+    QString size = rexp.cap();
+    if (size.startsWith("\" ")) {
+        size.remove("\" ");
+    }
+    package->m_size = size;
+
+    // the attributes
+    rexp = QRegExp("\\[ebuild.......\\]");
+    rexp.indexIn(line);
     QString attrString = rexp.cap();
     attrString = attrString.mid(7);
     attrString.remove(']');
-
     kDebug() << attrString;
+
+   return package;
 }
 
 void PortageEngine::Private::clearPackageList()
