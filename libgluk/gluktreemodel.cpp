@@ -47,7 +47,8 @@ public:
 GlukTreeModel::GlukTreeModel(QObject *parent) : QAbstractItemModel(parent), d(new Private(this))
 {
     d->helper = new SignalHelper(this);
-    connect(d->helper, SIGNAL(fetchProgress(qreal)), this, SIGNAL(fetchProgress(qreal)));
+    connect(d->helper, SIGNAL(fetchProgress(qreal, const QString &)), this,
+            SIGNAL(fetchProgress(qreal, const QString &)));
     connect(d->helper, SIGNAL(fetchCompleted()), this, SIGNAL(fetchCompleted()));
 
     d->fetchJob = new GlukJobs::TreeFetchJob(this, this);
@@ -205,7 +206,7 @@ void GlukTreeModel::loadEntries()
             }
 //             j++;
         }
-        d->helper->emitFetchProgress((qreal) i / entriesCount);
+        d->helper->emitFetchProgress((qreal) i / entriesCount, currentPath);
         i++;
     }
 

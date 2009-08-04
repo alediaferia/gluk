@@ -46,7 +46,7 @@ protected slots:
     void resetModel();
 
 signals:
-    void fetchProgress(qreal);
+    void fetchProgress(qreal, const QString &scanningDir);
     void fetchCompleted();
 
 private:
@@ -71,14 +71,14 @@ private:
     ~SignalHelper()
     {}
 
-    void emitFetchProgress(qreal progress)
-    { emit fetchProgress(progress); }
+    void emitFetchProgress(qreal progress, const QString &scanningDir)
+    { emit fetchProgress(progress, scanningDir); }
 
     void emitFetchCompleted()
     { emit fetchCompleted(); }
 
 signals:
-    void fetchProgress(qreal);
+    void fetchProgress(qreal, const QString &);
     void fetchCompleted();
 };
 

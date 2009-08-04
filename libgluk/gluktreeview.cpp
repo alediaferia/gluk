@@ -29,7 +29,7 @@
 
 GlukTreeView::GlukTreeView(QWidget *parent) : QTreeView(parent)
 {
-    connect (this, SIGNAL(activated(const QModelIndex &)), this, SLOT(emitEbuildClicked(const QModelIndex &)));
+    connect (this, SIGNAL(clicked(const QModelIndex &)), this, SLOT(emitEbuildClicked(const QModelIndex &)));
     connect (this, SIGNAL(doubleClicked(const QModelIndex &)), this, SLOT(emitItemDoubleClicked(const QModelIndex &)));
 }
 

@@ -26,7 +26,7 @@
 #include "ui_instresumedock.h"
 
 class GlukTreeModel;
-class QProgressBar;
+class KProgressDialog;
 class Ebuild;
 class QStandardItemModel;
 class QStandardItem;
@@ -43,7 +43,7 @@ public:
     void setupActions();
 
 protected slots:
-    void notifyFetchProgress(qreal);
+    void notifyFetchProgress(qreal, const QString &);
     void slotFetchCompleted();
     void slotEbuildInfo(Ebuild *);
     void addInstallItem(QStandardItem *);
@@ -60,7 +60,7 @@ private:
     Ui::InstallResumeDock irDock;
 
     GlukTreeModel *m_model;
-    QProgressBar *m_progressBar;
+    KProgressDialog *m_progressDialog;
     QStandardItemModel *m_installModel;
 
     KAction *m_config;

@@ -32,21 +32,22 @@
 
 #include <KVBox>
 #include <KStatusBar>
+#include <KProgressDialog>
 #include <KActionCollection>
 #include <KAction>
 #include <KMessageBox>
 #include <KLocale>
 #include <KDebug>
 
-MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
+MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent),
+m_model(0),
+m_progressDialog(new KProgressDialog(this))
 {
-    m_progressBar = new QProgressBar(this);
-    m_progressBar->setMinimum(0);
-    m_progressBar->setMaximum(100);
-    m_progressBar->setMaximumWidth(150);
-    m_progressBar->setMaximumHeight(fontMetrics().height());
-    statusBar()->addPermanentWidget(m_progressBar, 0);
-    m_progressBar->hide();
+    m_progressDialog->setAutoClose(true);
+    m_progressDialog->progressBar()->setMinimum(0);
+    m_progressDialog->progressBar()->setMaximum(100);
+    m_progressDialog->show();
+    m_progressDialog->setCaption(i18n("Portage Tree fetching progress"));
 
     KVBox *mainWidget = new KVBox(this);
 
@@ -91,7 +92,7 @@ MainWindow::MainWindow(QWidget *parent) : KXmlGuiWindow(parent), m_model(0)
     irDock.clearButton->setIcon(KIcon("edit-clear-list"));
     irDock.deleteButton->setIcon(KIcon("list-remove"));
 
-    connect (m_model, SIGNAL(fetchProgress(qreal)), this, SLOT(notifyFetchProgress(qreal)));
+    connect (m_model, SIGNAL(fetchProgress(qreal, const QString &)), this, SLOT(notifyFetchProgress(qreal, const QString &)));
     connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
 
     connect (ui.treeView, SIGNAL(ebuildClicked(Ebuild*)), this, SLOT(slotEbuildInfo(Ebuild*)));
@@ -132,16 +133,16 @@ void MainWindow::setupActions()
     m_install->setEnabled(false);
 }
 
-void MainWindow::notifyFetchProgress(qreal progress)
+void MainWindow::notifyFetchProgress(qreal progress, const QString &scanningDir)
 {
 //     kDebug() << progress;
-    m_progressBar->show();
-    m_progressBar->setValue(progress*100);
+    m_progressDialog->progressBar()->setValue(progress*100);
+    m_progressDialog->setLabelText(i18n("Scanning:") + " " + scanningDir);
 }
 
 void MainWindow::slotFetchCompleted()
 {
-    m_progressBar->hide();
+    m_progressDialog->deleteLater();
 }
 
 void MainWindow::slotEbuildInfo(Ebuild *ebuild)
