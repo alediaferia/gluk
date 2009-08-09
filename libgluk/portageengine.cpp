@@ -72,13 +72,17 @@ QHash<QApplication*, PortageEngine*> PortageEngine::m_instances = QHash<QApplica
 
 PortageEngine* PortageEngine::instance()
 {
+    PortageEngine *instance = 0;
     if (!m_instances.contains(qApp)) {
         kDebug() << "appending" << qApp;
-        m_instances[qApp] = new PortageEngine;
+        instance = new PortageEngine;
+        m_instances[qApp] = instance;
+        connect (qApp, SIGNAL(aboutToQuit()), instance, SLOT(deRef()));
     }
 
-    PortageEngine *instance = m_instances[qApp];
-    connect (qApp, SIGNAL(aboutToQuit()), instance, SLOT(deRef()));
+    if (!instance) {
+        instance = m_instances[qApp];
+    }
     return instance;
 }
 

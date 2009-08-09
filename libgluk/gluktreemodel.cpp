@@ -179,7 +179,7 @@ void GlukTreeModel::loadEntries()
     while (mainIt.hasNext()) {
         const QString currentPath = mainIt.next();
         if (currentPath.contains("eclass") || currentPath.contains("distfiles") ||
-            currentPath.contains("licenses") || currentPath.contains("scripts")) {
+            currentPath.contains("licenses") || currentPath.contains("scripts") || currentPath.contains("metadata")) {
             continue;
         }
 
