@@ -31,8 +31,7 @@ public:
     Private(PortageEngine *q) : q(q),
                                 process(new QProcess(q)),
                                 currentAction(PortageEngine::NoAction),
-                                done(false),
-                                refs(0)
+                                done(false)
     {}
     ~Private() {}
 
@@ -43,9 +42,6 @@ public:
     bool done;
     QString output;
     QList<Package*> packages;
-
-    QList<QApplication*> connectedApps;
-    int refs;
 
     QString errorTitle;
     QString errorBody;
@@ -72,30 +68,31 @@ PortageEngine::~PortageEngine()
     delete d;
 }
 
-PortageEngine* PortageEngine::m_instance = 0;
+QHash<QApplication*, PortageEngine*> PortageEngine::m_instances = QHash<QApplication*, PortageEngine*>();
 
 PortageEngine* PortageEngine::instance()
 {
-    if (!m_instance) {
-        m_instance = new PortageEngine;
+    if (!m_instances.contains(qApp)) {
+        kDebug() << "appending" << qApp;
+        m_instances[qApp] = new PortageEngine;
     }
 
-    if (!m_instance->d->connectedApps.contains(qApp)) {
-        m_instance->d->connectedApps << qApp;
-        m_instance->d->refs++;
-        connect (qApp, SIGNAL(aboutToQuit()), m_instance, SLOT(deRef()));
-    }
-
-    return m_instance;
+    PortageEngine *instance = m_instances[qApp];
+    connect (qApp, SIGNAL(aboutToQuit()), instance, SLOT(deRef()));
+    return instance;
 }
 
 void PortageEngine::deRef()
 {
-    d->refs--;
-    kDebug() << d->refs;
-    if (!d->refs) {
-        m_instance->deleteLater();
+    if (!m_instances.contains((QApplication*)(sender()))) {
+        kDebug() << "no" << sender() << "found";
+        return;
     }
+    
+    PortageEngine *instance = m_instances[(QApplication*)(sender())];
+    m_instances.remove((QApplication*)(sender()));
+    kDebug() << "detaching application" << sender() << "for instance" << instance;
+    instance->deleteLater();
 }
 
 void PortageEngine::pretend(const QStringList &atoms)
@@ -107,7 +104,7 @@ void PortageEngine::pretend(const QStringList &atoms)
     const QString kdesu = KStandardDirs::findExe("kdesu");
 
     d->process->waitForFinished();
-    d->process->start(kdesu, QStringList() << "-td" << "emerge -pv --color n " + atoms.join(" "));
+    d->process->start(kdesu, QStringList() << "-td" << "--noignorebutton" << "emerge -pv --color n " + atoms.join(" "));
 }
 
 void PortageEngine::parseEmergeOutput()
@@ -188,11 +185,12 @@ Package* PortageEngine::Private::createPackageData(const QString &line)
 
     // the use flags of the package
     rexp = QRegExp("USE=\".*\"");
-    rexp.indexIn(line);
-    QString useFlags = rexp.cap();
-    useFlags.remove("USE=\"");
-    useFlags.remove('\"');
-    package->m_useFlags = useFlags.split(" ");
+    if (rexp.indexIn(line) != -1) {
+        QString useFlags = rexp.cap();
+        useFlags.remove("USE=\"");
+        useFlags.remove('\"');
+        package->m_useFlags = useFlags.split(" ");
+    }
 
     // the size of the package
     rexp = QRegExp("\\ [0-9].*\\ .*B$");

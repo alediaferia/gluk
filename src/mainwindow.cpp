@@ -212,7 +212,7 @@ void MainWindow::showOutput()
 
             useFlag->setCheckable(true);
             useFlag->setCheckState(Qt::Checked);
-            if (useFlag->text().startsWith('-')) {
+            if (useFlag->text().startsWith('-')) { // TODO: check flags like (-flagname)
                 QString text = useFlag->text();
                 text = text.mid(1);
                 useFlag->setText(text);

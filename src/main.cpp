@@ -39,8 +39,8 @@ int main ( int argc, char *argv[] )
 
   KApplication app;
 
-  MainWindow *mainwindow = new MainWindow();
-  mainwindow->show();  
+  MainWindow *mw = new MainWindow;
+  mw->show();
 
   return app.exec();
 

@@ -23,8 +23,10 @@
 
 #include <QObject>
 #include <QStringList>
+#include <QHash>
 class QProcess;
 class Package;
+class QApplication;
 
 /**
  * @class PortageEngine
@@ -70,7 +72,7 @@ public:
     Action currentAction();
 
 private:
-    static PortageEngine *m_instance;
+    static QHash<QApplication*, PortageEngine*> m_instances;
 
     class Private;
     Private *d;
