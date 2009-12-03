@@ -58,10 +58,6 @@ void GlukTreeView::emitItemDoubleClicked(const QModelIndex &index)
         return; 
     }
 
-    QStandardItem *item = new QStandardItem;
-    item->setText(index.data().toString());
-    item->setIcon(index.data(Qt::DecorationRole).value<QIcon>());
-    item->setData(QVariant::fromValue(index.data(GlukTreeModel::EbuildRole).value<Ebuild*>()));
-
+    TreeItem *item = index.data(GlukTreeModel::TreeItemRole).value<TreeItem*>();
     emit itemDoubleClicked(item);
 }

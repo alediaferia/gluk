@@ -20,6 +20,7 @@
 #define TREEITEM_H
 
 #include <QString>
+#include <QVariant>
 #include "gluk_macros.h"
 
 class Ebuild;
@@ -29,6 +30,7 @@ class GLUK_EXPORT TreeItem
 public:
     enum Type { Category, Package };
 
+    TreeItem();
     /**
      * Defines an item of the portage tree. An item can be
      * a Category, e.g. media-gfx, or a Package, e.g. amarok.
@@ -85,5 +87,7 @@ private:
     class Private;
     Private *d;
 };
+
+Q_DECLARE_METATYPE(TreeItem*);
 
 #endif

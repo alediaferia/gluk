@@ -17,11 +17,12 @@
  *   51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA .        *
  ***************************************************************************/
 #include "mainwindow.h"
-#include <gluktreemodel.h>
-#include <gluksortfiltermodel.h>
-#include <ebuild.h>
-#include <portageengine.h>
-#include <package.h>
+#include <libgluk/gluktreemodel.h>
+#include <libgluk/gluksortfiltermodel.h>
+#include <libgluk/ebuild.h>
+#include <libgluk/portageengine.h>
+#include <libgluk/package.h>
+#include <libgluk/treeitem.h>
 
 #include <QProgressBar>
 #include <QDockWidget>
@@ -96,7 +97,7 @@ m_progressDialog(new KProgressDialog(this))
     connect (m_model, SIGNAL(fetchCompleted()), this, SLOT(slotFetchCompleted()));
 
     connect (ui.treeView, SIGNAL(ebuildClicked(Ebuild*)), this, SLOT(slotEbuildInfo(Ebuild*)));
-    connect (ui.treeView, SIGNAL(itemDoubleClicked(QStandardItem*)), this, SLOT(addInstallItem(QStandardItem *)));
+    connect (ui.treeView, SIGNAL(itemDoubleClicked(TreeItem*)), this, SLOT(addInstallItem(TreeItem *)));
     connect (irDock.clearButton, SIGNAL(clicked()), this, SLOT(clearInstallItems()));
     connect (irDock.deleteButton, SIGNAL(clicked()), this, SLOT(removeSelectedInstallItem()));
 
@@ -156,9 +157,12 @@ void MainWindow::slotEbuildInfo(Ebuild *ebuild)
 }
 
 
-void MainWindow::addInstallItem(QStandardItem *item)
+void MainWindow::addInstallItem(TreeItem *item)
 {
-    m_installModel->appendRow(item);
+    QStandardItem *standardItem = new QStandardItem;
+    standardItem->setText(item->name());
+    standardItem->setData(qVariantFromValue(item->ebuild()));
+    m_installModel->appendRow(standardItem);
 }
 
 void MainWindow::clearInstallItems()

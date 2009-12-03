@@ -46,7 +46,7 @@ protected slots:
     void notifyFetchProgress(qreal, const QString &);
     void slotFetchCompleted();
     void slotEbuildInfo(Ebuild *);
-    void addInstallItem(QStandardItem *);
+    void addInstallItem(TreeItem *);
     void clearInstallItems();
     void removeSelectedInstallItem();
     void configureInstallation();

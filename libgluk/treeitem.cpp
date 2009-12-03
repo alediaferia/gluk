@@ -39,6 +39,9 @@ public:
     Ebuild* ebuild;
 };
 
+TreeItem::TreeItem() : d(new Private())
+{}
+
 TreeItem::TreeItem(const QString &name, TreeItem::Type type, TreeItem *parent) : d(new Private())
 {
     d->type = type;

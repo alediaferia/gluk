@@ -64,6 +64,6 @@ private:
     QString expandVars(const QString &);
 };
 
-Q_DECLARE_METATYPE(Ebuild*)
+Q_DECLARE_METATYPE(Ebuild*);
 
 #endif

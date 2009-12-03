@@ -28,7 +28,7 @@ class GLUK_EXPORT GlukTreeModel : public QAbstractItemModel
 {
     Q_OBJECT
 public:
-    enum EbuildData { EbuildRole = 33 };
+    enum EbuildData { EbuildRole = 33, TreeItemRole = 34 };
     GlukTreeModel(QObject *parent = 0);
     ~GlukTreeModel();
 

@@ -60,14 +60,14 @@ public:
     void pretend(const QStringList &atoms);
 
     /**
-     * @Returns the current packages resulting from the last
+     * @returns the current packages resulting from the last
      * Portage interrogation or an empty list if no interrogation
      * occurred.
      */
     QList<Package*> packages();
 
     /**
-     * @Returns the action currently performing.
+     * @returns the action currently performing.
      */
     Action currentAction();
 

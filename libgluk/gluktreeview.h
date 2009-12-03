@@ -23,7 +23,7 @@
 #include <QTreeView>
 class GlukSortFilterModel;
 class Ebuild;
-class QStandardItem;
+class TreeItem;
 
 class GLUK_EXPORT GlukTreeView : public QTreeView
 {
@@ -36,7 +36,7 @@ public:
 
 signals:
     void ebuildClicked(Ebuild*);
-    void itemDoubleClicked(QStandardItem *);
+    void itemDoubleClicked(TreeItem *);
 
 protected slots:
     void emitEbuildClicked(const QModelIndex &index);

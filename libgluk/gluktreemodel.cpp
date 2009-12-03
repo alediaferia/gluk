@@ -51,9 +51,6 @@ GlukTreeModel::GlukTreeModel(QObject *parent) : QAbstractItemModel(parent), d(ne
             SIGNAL(fetchProgress(qreal, const QString &)));
     connect(d->helper, SIGNAL(fetchCompleted()), this, SIGNAL(fetchCompleted()));
 
-    d->fetchJob = new GlukJobs::TreeFetchJob(this, this);
-    connect (d->fetchJob, SIGNAL(completed()), this, SLOT(resetModel()));
-
 }
 
 GlukTreeModel::~GlukTreeModel()
@@ -112,6 +109,8 @@ QVariant GlukTreeModel::data(const QModelIndex &index, int role) const
         case GlukTreeModel::EbuildRole :
              return QVariant::fromValue(static_cast<TreeItem*>(index.internalPointer())->ebuild());
              break;
+        case GlukTreeModel::TreeItemRole :
+             return QVariant::fromValue(static_cast<TreeItem*>(index.internalPointer()));
          default : ;
     }
 
@@ -154,6 +153,9 @@ QModelIndex GlukTreeModel::parent(const QModelIndex &index) const
 void GlukTreeModel::reloadTree()
 {
     delete d->rootItem;
+
+    d->fetchJob = new GlukJobs::TreeFetchJob(this, this);
+//    connect (d->fetchJob, SIGNAL(completed()), this, SLOT(resetModel()));
     d->fetchJob->start();
 //     reset();
 }
@@ -173,6 +175,7 @@ void GlukTreeModel::loadEntries()
 
     const int entriesCount = QDir(portageDir).entryList(QDir::AllDirs | QDir::NoDotAndDotDot).count();
 
+    beginInsertRows(QModelIndex(), 0, entriesCount - 6);
     QDirIterator mainIt(portageDir, QDir::AllDirs | QDir::NoDotAndDotDot);
 
     int i = 0;
@@ -209,6 +212,6 @@ void GlukTreeModel::loadEntries()
         d->helper->emitFetchProgress((qreal) i / entriesCount, currentPath);
         i++;
     }
-
+    endInsertRows();
     d->helper->emitFetchCompleted();
 }
